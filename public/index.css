@@ -1,14 +1,12 @@
-#img {
-  display: block;
-  margin: auto;
-  height: 128px;
-  width: 128px;
-  padding: 2rem;
+@import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");
+body {
+  margin: 0;
 }
-
-#canvas {
+canvas {
+  width: 100vw;
+  height: 100vh;
   display: block;
-  margin: 2rem auto;
-  width: 540px;
-  height: 540px;
+}
+#ui {
+  width: 200px;
 }
