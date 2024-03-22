@@ -1,12 +1,73 @@
 @import url("https://webglfundamentals.org/webgl/resources/webgl-tutorials.css");
+
 body {
   margin: 0;
 }
+
+h2 {
+  color: white;
+  font-size: 20px;
+}
+
+button {
+  background-color: #fada5e;
+  color: black;
+  width: 100%; /* Make button width responsive */
+  margin: 2px 0; /* Adjust margin for stacking */
+  font-size: 13px;
+  padding: 10px 15px;
+  border-radius: 5px;
+}
+
 canvas {
+  width: 100%; /* Adjust canvas width to be 100% of its parent */
+  height: 100%; /* Adjust canvas height */
+  background-color: white;
+}
+
+.container {
+  display: flex;
+  flex-direction: row;
   width: 100vw;
   height: 100vh;
-  display: block;
 }
-#ui {
-  width: 200px;
+
+.canvasContainer {
+  flex: 1; /* Allow canvas container to fill available space */
+}
+
+.sidebar {
+  background-color: black;
+  width: 30%; /* Adjust sidebar width */
+  height: 100vh;
+  padding: 15px;
+  overflow: auto; /* Add scrolling to sidebar content */
+}
+
+label {
+  color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .canvasContainer,
+  .sidebar {
+    width: 100%; /* Stack sidebar and canvas container on smaller screens */
+  }
+
+  canvas {
+    height: 50vh; /* Adjust canvas height on smaller screens */
+  }
+
+  .sidebar {
+    height: auto; /* Adjust sidebar height to content */
+  }
+}
+
+.slider {
+  width: 100%; /* Make slider responsive */
 }
