@@ -27,6 +27,17 @@ class Point {
     public moveCoordinateY(_delta){
         this.y += _delta
     }
+    public setCoordinateFromEvent(ev: MouseEvent) {
+        var rect = (ev.target as HTMLElement).getBoundingClientRect()
+        this.x = (ev.clientX - rect.left) / (rect.right - rect.left) * 2 - 1
+        this.y = 1 - (ev.clientY - rect.top) / (rect.bottom - rect.top) * 2
+    }
+    /**
+     * @returns Array of length 6, [posX, posY, colorR, colorG, colorB, colorA]
+     */
+    public toArray(): Float32Array {
+        return new Float32Array([this.x, this.y, ...this.color])
+    }
 
     
 

@@ -1,10 +1,10 @@
 import Point from "./point"
 
-class Line {
+class Line implements Drawable {
     point1: Point
     point2: Point
 
-    public constructor(_point1: Point){
+    public setPoint1(_point1: Point) {
         this.point1 = _point1
     }
     public setPoint2(_point2 : Point){
@@ -19,5 +19,12 @@ class Line {
         this.point2.moveCoordinateY(_delta);
     }
 
+    public draw(gl: WebGLRenderingContext): void {
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([...this.point1.toArray(), ...this.point2.toArray()]), gl.STATIC_DRAW);
+        gl.drawArrays(gl.LINES, 0, 2);
+    }
+
     
 }
+
+export default Line;
