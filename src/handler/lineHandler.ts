@@ -1,3 +1,4 @@
+import { getColor } from "../utils/colorUtil"
 import Line from "../model/line"
 import Point from "../model/point"
 
@@ -52,11 +53,11 @@ class LineHandler implements Handler {
                 this.line = new Line
                 this.lines.push(this.line)
 
-                var new_point1 = new Point(0,0,[0,0,0,1])
+                var new_point1 = new Point(0,0,getColor())
                 new_point1.setCoordinateFromEvent(e)
                 this.line.setPoint1(new_point1)
 
-                var new_point2 = new Point(0,0,[0,0,0,1])
+                var new_point2 = new Point(0,0,getColor())
                 new_point2.setCoordinateFromEvent(e)
                 this.line.setPoint2(new_point2)
 

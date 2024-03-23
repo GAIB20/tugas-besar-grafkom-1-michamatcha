@@ -26,8 +26,11 @@ if(vertexShader === null){
 }
 const vertexShaderCode = `
   attribute vec2 coordinates;
+  attribute vec4 colors;
+  varying vec4 colors_frag;
   void main(void) {
     gl_Position = vec4(coordinates, 0.0, 1.0);
+    colors_frag = colors;
   }
 `;
 gl.shaderSource(vertexShader, vertexShaderCode)
@@ -40,8 +43,9 @@ const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 if (fragmentShader === null)
   throw new Error("Could not establish fragment shader"); 
 const fragmentShaderCode = `
+  varying mediump vec4 colors_frag;
   void main(void) {
-    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+    gl_FragColor = colors_frag;
   }
 `;
 gl.shaderSource(fragmentShader, fragmentShaderCode);
@@ -57,15 +61,18 @@ gl.linkProgram(shaderProgram);
 const vertex_buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
 const coordinates = gl.getAttribLocation(shaderProgram, "coordinates");
+const colors =gl.getAttribLocation(shaderProgram, "colors")
 gl.enableVertexAttribArray(coordinates);
+gl.enableVertexAttribArray(colors);
 gl.vertexAttribPointer(coordinates, 2, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 0);
+gl.vertexAttribPointer(colors     , 4, gl.FLOAT, false, 6 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 
 drawScene();
 
 function drawScene() {
   canvas.width = canvas.clientWidth
   canvas.height = canvas.clientHeight
-  
+
   gl.viewport(0, 0, canvas.width, canvas.height);
   gl.clearColor(1, 1, 1, 1);
   gl.clear(gl.COLOR_BUFFER_BIT);
