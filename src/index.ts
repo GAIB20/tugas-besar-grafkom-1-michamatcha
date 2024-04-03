@@ -1,5 +1,7 @@
 import { LineHandler } from "./handler/lineHandler";
+import { RectangleHandler } from "./handler/rectangleHandler";
 import Line from "./model/line";
+import Rectangle from "./model/rectangle";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 if(canvas === null) {
@@ -11,52 +13,75 @@ if(gl === null){
   throw new Error("Couldnt get webgl context")
 }
 
-// gl.viewport(0, 0, canvas.width, canvas.height)
-// gl.clearColor(0.5, 0.5, 0.5, 1.0);
-// gl.enable(gl.DEPTH_TEST);
-// gl.clear(gl.COLOR_BUFFER_BIT);
+const shapeButtons = document.getElementsByClassName("shape");
+Array.from(shapeButtons).forEach(button =>{
+  button.addEventListener('click', function(){
+    Array.from(shapeButtons).forEach(btn => btn.classList.remove('active'));
+    this.classList.add('active');
+    handleShapeButton(this.id)
+  })
+})
+
+function handleShapeButton(buttonId: string){
+  switch(buttonId){
+    case "shapeLine":
+      console.log("Line selected")
+      changeCurrentHandler(new LineHandler(gl, lines))
+      break;
+    case "shapeSquare":
+      console.log("Square selected");
+      break;
+    case "shapeRectangle":
+      console.log("Rectangle selected")
+      changeCurrentHandler(new RectangleHandler(gl, rectangles))
+      break
+    case "shapePolygon":
+      console.log("Polygon selected");
+      break
+  }
+}
 
 const lines: Array<Line> = []
+const rectangles : Array <Rectangle> = []
 
 
 // CREATE VERTEX SHADER
-const vertexShader = gl.createShader(gl.VERTEX_SHADER)
-if(vertexShader === null){
-  throw new Error("could establish vertex shader")
-}
+
 const vertexShaderCode = `
   attribute vec2 coordinates;
+  uniform vec2 translation;
   attribute vec4 colors;
   varying vec4 colors_frag;
   void main(void) {
-    gl_Position = vec4(coordinates, 0.0, 1.0);
+    gl_Position = vec4(coordinates + translation, 0.0, 1.0);
     colors_frag = colors;
   }
 `;
-gl.shaderSource(vertexShader, vertexShaderCode)
 
-gl.compileShader(vertexShader)
-
-
-// CREATE FRAGMENT SHADER
-const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
-if (fragmentShader === null)
-  throw new Error("Could not establish fragment shader"); 
 const fragmentShaderCode = `
   varying mediump vec4 colors_frag;
   void main(void) {
     gl_FragColor = colors_frag;
   }
 `;
-gl.shaderSource(fragmentShader, fragmentShaderCode);
-gl.compileShader(fragmentShader);
 
 
-const shaderProgram = gl.createProgram();
-if (shaderProgram === null) throw new Error("Could not create shader program");
-gl.attachShader(shaderProgram, vertexShader);
-gl.attachShader(shaderProgram, fragmentShader);
-gl.linkProgram(shaderProgram);
+
+// const shaderProgram = gl.createProgram();
+// if (shaderProgram === null) throw new Error("Could not create shader program");
+// gl.attachShader(shaderProgram, vertexShader);
+// gl.attachShader(shaderProgram, fragmentShader);
+// gl.linkProgram(shaderProgram);
+
+const shaderProgram= initShader(gl, vertexShaderCode, fragmentShaderCode)
+const programInfo = {
+  program: shaderProgram,
+  attribLocations: {
+      vertexPosition: gl.getAttribLocation(shaderProgram, 'coordinates'),
+      colors: gl.getAttribLocation(shaderProgram, "colors")
+  },
+};
+
 
 const vertex_buffer = gl.createBuffer();
 gl.bindBuffer(gl.ARRAY_BUFFER, vertex_buffer);
@@ -80,10 +105,43 @@ function drawScene() {
   
   lines.forEach (element => {
     element.draw(gl);
+    console.log(element)
   });
+  rectangles.forEach(element => {
+    console.log(element)
+    element.draw(gl)
+  })
 
   window.requestAnimationFrame(drawScene);
 }
+function loadShader(gl, type, source){
+  const shader = gl.createShader(type)
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    alert('Error compiling shader: ' + gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    return null;
+}
+
+return shader;
+  }
+
+function initShader(gl, vertexShaderCode, fragmentShaderCode){
+  const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderCode)
+  const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentShaderCode)
+  const shaderProgram = gl.createProgram()
+  gl.attachShader(shaderProgram, vertexShader)
+  gl.attachShader(shaderProgram, fragmentShader)
+  gl.linkProgram(shaderProgram)
+  if(!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)){
+    alert("unable to init shader program : " + gl.getProgramInfoLog(shaderProgram))
+    return null
+  }
+  return shaderProgram
+}
+
+
 
 // Set mouse event handler
 var current_handler: Handler
@@ -95,7 +153,7 @@ function changeCurrentHandler(new_handler: Handler) {
   canvas.onclick = (e) => current_handler.onMouseClick(e)
 }
 
-changeCurrentHandler(new LineHandler(gl, lines))
+
 
 
 // // Step 1: Initialize the array of vertices for our triangle
