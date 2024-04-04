@@ -1,9 +1,11 @@
 import { LineHandler } from "./handler/lineHandler";
 import { RectangleHandler } from "./handler/rectangleHandler";
+import { PolygonHandler } from "./handler/polygonHandler";
 import Line from "./model/line";
 import Point from "./model/point";
 import Rectangle from "./model/rectangle";
 import { getColor } from "./utils/colorUtil";
+import Polygon from "./model/polygon";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 if(canvas === null) {
@@ -152,6 +154,7 @@ function handleShapeButton(buttonId: string){
       break
     case "shapePolygon":
       console.log("Polygon selected");
+      changeCurrentHandler(new PolygonHandler(gl, polygons))
       break
   }
 }
@@ -160,6 +163,7 @@ function handleShapeButton(buttonId: string){
 
 const lines: Array<Line> = []
 const rectangles : Array <Rectangle> = []
+const polygons: Array<Polygon> = []
 
 
 // CREATE VERTEX SHADER
@@ -215,11 +219,12 @@ function drawScene() {
   
   lines.forEach (element => {
     element.draw(gl);
-    // console.log(element)
   });
   rectangles.forEach(element => {
-    // console.log(element)
     element.draw(gl)
+  })
+  polygons.forEach (element => {
+    element.draw(gl);
   })
 
   window.requestAnimationFrame(drawScene);
