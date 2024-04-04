@@ -92,6 +92,7 @@ class Polygon implements Drawable {
             point.moveCoordinateX(_deltaX)
             point.moveCoordinateY(_deltaY)
         })
+        this.refreshBuffer()
     }
     isCoordInside(coord: [number, number]): boolean {
         if (this.points.length < 3) return false
@@ -107,6 +108,13 @@ class Polygon implements Drawable {
             }
         }
         return true
+    }
+    dilate(_scale: number) {
+        this.points.forEach((point) => {
+            point.x = _scale * point.x
+            point.y = _scale * point.y
+        })
+        this.refreshBuffer()
     }
 }
 

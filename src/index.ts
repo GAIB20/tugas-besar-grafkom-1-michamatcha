@@ -44,11 +44,25 @@ Array.from(basicActionButtons).forEach(button => {
 const selectButton = document.getElementById("selectButton")
 selectButton.addEventListener('click', function(){
   canvas.onmousedown= (e) => {
-    // check rectangle
     var new_point = new Point(0,0,getColor())
     var temp : boolean
-    var count = rectangles.length-1;
+    var count = polygons.length-1;
     new_point.setCoordinateFromEvent(e)
+
+    // check polygon
+    for(let i = polygons.length-1; i >= 0; i--){
+      temp = polygons[i].isCoordInside([new_point.x, new_point.y])
+      if(temp){
+        console.log(`Inside polygon ${count}`)
+        shapeActive = 3
+        order = count
+        break
+      }
+      count--
+    }
+
+    // check rectangle
+    count = rectangles.length-1;
     for(let i = rectangles.length-1; i >= 0; i--){
       temp = rectangles[i].isCoordInside([new_point.x, new_point.y])
       if(temp){
@@ -128,6 +142,8 @@ function translation(){
         lines[order].translate(diffX, diffY);
     } else if(shapeActive === 1 && rectangles[order]) {
         rectangles[order].translate(diffX, diffY);
+    } else if(shapeActive === 3 && polygons[order]) {
+        polygons[order].translate(diffX, diffY)
     }
   }
 }
@@ -140,7 +156,9 @@ function dilate(){
       lines[order].dilate(diff)
     }else if(shapeActive === 1 && rectangles[order]){
       rectangles[order].dilate(diff)
-    }
+    }else if(shapeActive === 3 && polygons[order]) {
+      polygons[order].dilate(diff)
+  }
   }
 
 }
