@@ -7,6 +7,7 @@ import Rectangle from "./model/rectangle";
 import { getColor } from "./utils/colorUtil";
 import Polygon from "./model/polygon";
 import VertexPointer from "./model/vertexPointer";
+import Selectable from "./model/selectable";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 if(canvas === null) {
@@ -17,8 +18,9 @@ const gl = canvas.getContext("webgl");
 if(gl === null){
   throw new Error("Couldnt get webgl context")
 }
-var shapeActive; // 0 : line, 1: rectangle, 2: square, 3: polygon, 4: vertexPointers
+var shapeActive; // 0 : line, 1: rectangle, 2: square, 3: polygon
 var order;
+var pointOrder = -1; // -1: no point picked
 
 const shapeButtons = document.getElementsByClassName("shape");
 Array.from(shapeButtons).forEach(button =>{
@@ -50,6 +52,9 @@ selectButton.addEventListener('click', function(){
     var count = polygons.length-1;
     new_point.setCoordinateFromEvent(e)
 
+    let tmpShapeActive = shapeActive
+    shapeActive = -1
+
     // check polygon
     for(let i = polygons.length-1; i >= 0; i--){
       temp = polygons[i].isCoordInside([new_point.x, new_point.y])
@@ -57,6 +62,7 @@ selectButton.addEventListener('click', function(){
         console.log(`Inside polygon ${count}`)
         shapeActive = 3
         order = count
+        pointOrder = -1
         break
       }
       count--
@@ -70,6 +76,7 @@ selectButton.addEventListener('click', function(){
         console.log(`Inside rectangle ${count}`)
         shapeActive = 1
         order = count
+        pointOrder = -1
         break
       }
       count--
@@ -83,6 +90,7 @@ selectButton.addEventListener('click', function(){
         console.log(`Inside lines ${count}`)
         shapeActive = 0
         order = count
+        pointOrder = -1
         break
       }
       count--
@@ -94,21 +102,27 @@ selectButton.addEventListener('click', function(){
       temp = vertexPointers[i].isCoordInside([new_point.x, new_point.y])
       if(temp){
         console.log(`Inside vertex ${count}`)
-        shapeActive = 4
-        order = count
+        pointOrder = count
+        shapeActive = tmpShapeActive
         break
       }
       count--
     }
     
+    
+    while (vertexPointers.length) {
+      vertexPointers.pop()
+    }
     if(shapeActive === 0 && lines[order]) { 
       lines[order].showAllVertex(vertexPointers);
     } else if(shapeActive === 1 && rectangles[order]) {
       rectangles[order].showAllVertex(vertexPointers);
     } else if(shapeActive === 3 && polygons[order]) {
       polygons[order].showAllVertex(vertexPointers);
-    } else if (shapeActive === 4 && vertexPointers[order]) {
-      vertexPointers[order].showAllVertex(vertexPointers)
+    } 
+    
+    if (pointOrder != -1 && vertexPointers[pointOrder]) {
+      vertexPointers[pointOrder].showAllVertex(vertexPointers)
     }
   }
 })
@@ -240,6 +254,38 @@ function handleShapeButton(buttonId: string){
       break
   }
 }
+
+const colorPicker = document.getElementById("point-color") as HTMLElement
+colorPicker.addEventListener('change', (ev) => {
+    // check if a point / shape is selected
+
+    let shapeSelected: Drawable = null
+    switch (shapeActive) {
+      case 0:
+        shapeSelected = lines[order]
+        break
+      case 1:
+        shapeSelected = rectangles[order]
+        break
+      case 2:
+        break
+      case 3:
+        shapeSelected = polygons[order]
+        break
+    }
+
+    if (shapeSelected) {
+      if (pointOrder == -1) {
+        shapeSelected.changeAllColor(getColor())
+      }
+      else {
+        shapeSelected.changeColor(pointOrder, getColor())
+      }
+      console.log('hi this is shape selected part')
+    }
+
+    console.log('hi this is color picker')
+})
 
 
 

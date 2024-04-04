@@ -45,6 +45,21 @@ class Line implements Drawable, Transformable, Selectable {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([...this.point1.toArray(), ...this.point2.toArray()]), gl.DYNAMIC_DRAW);
         gl.drawArrays(gl.LINES, 0, 2);
     }
+    changeColor(id: number, color: [number, number, number, number]): void {
+        if (id === 0) {
+            this.point1.color = color
+        }
+        else if (id === 1) {
+            this.point2.color = color
+        }
+        else {
+            throw new Error("No such point in line")
+        }
+    }
+    changeAllColor(color: [number, number, number, number]): void {
+        this.point1.color = color
+        this.point2.color = color
+    }
     public translate(_deltaX : number, _deltaY: number){
         this.point1.moveCoordinateX(_deltaX);
         this.point2.moveCoordinateX(_deltaX);

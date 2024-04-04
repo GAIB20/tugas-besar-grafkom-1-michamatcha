@@ -118,6 +118,16 @@ class Polygon implements Drawable, Transformable, Selectable {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.pointsBuffer), gl.DYNAMIC_DRAW)
         gl.drawArrays(gl.TRIANGLES, 0, this.pointsBuffer.length / 6)
     }
+    changeColor(id: number, color: [number, number, number, number]): void {
+        this.points[id].setColor(color)
+        this.refreshBuffer()
+    }
+    changeAllColor(color: [number, number, number, number]): void {
+        this.points.forEach((point) => {
+            point.setColor(color)
+        })
+        this.refreshBuffer()
+    }
 
     public translate(_deltaX: number, _deltaY: number) {
         this.points.forEach((point) => {
