@@ -1,3 +1,4 @@
+import { getColor } from "../utils/colorUtil";
 import Point from "./point";
 import Selectable from "./selectable";
 import VertexPointer from "./vertexPointer";
@@ -9,9 +10,6 @@ class Polygon implements Drawable, Transformable, Selectable {
     constructor() {
         this.points = []
         this.pointsBuffer = []
-    }
-    rotate(_deg: number) {
-        // throw new Error("Method not implemented.");
     }
 
     public addPoint(point: Point) {
@@ -79,6 +77,20 @@ class Polygon implements Drawable, Transformable, Selectable {
 
         this.points = new_points
     }
+    // Centroid of a polygon
+    // 
+    getCentroid() {
+
+    }
+
+    // Centroid of vertices
+    getMiddlePoint() {
+        return new Point(
+            this.points.map((x) => x.x).reduce((prev, cur) => prev + cur) / this.points.length,
+            this.points.map((x) => x.y).reduce((prev, cur) => prev + cur) / this.points.length,
+            getColor()
+        )
+    }
 
     // negative = counterclockwise
     // positive = clockwise
@@ -115,12 +127,21 @@ class Polygon implements Drawable, Transformable, Selectable {
         return true
     }
     dilate(_scale: number) {
+        const mid = this.getMiddlePoint()
         this.points.forEach((point) => {
+            point.x -= mid.x
+            point.y -= mid.y
             point.x = _scale * point.x
             point.y = _scale * point.y
+            point.x += mid.x
+            point.y += mid.y
         })
         this.refreshBuffer()
     }
+    rotate(_theta: number) {
+        
+    }
+    
     showAllVertex(pointers: VertexPointer[]): void {
         while (pointers.length > 0) 
             pointers.pop()
