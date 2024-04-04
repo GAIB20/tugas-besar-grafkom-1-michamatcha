@@ -29,7 +29,7 @@ class Line implements Drawable {
         
     }
     public draw(gl: WebGLRenderingContext): void {
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([...this.point1.toArray(), ...this.point2.toArray()]), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([...this.point1.toArray(), ...this.point2.toArray()]), gl.DYNAMIC_DRAW);
         gl.drawArrays(gl.LINES, 0, 2);
     }
     dilate(_scale: number) {
