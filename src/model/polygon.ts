@@ -1,3 +1,4 @@
+import { getColor } from "../utils/colorUtil";
 import Point from "./point";
 import Selectable from "./selectable";
 import VertexPointer from "./vertexPointer";
@@ -9,12 +10,6 @@ class Polygon implements Drawable, Transformable, Selectable {
     constructor() {
         this.points = []
         this.pointsBuffer = []
-    }
-    dilate(_scale: number) {
-        // throw new Error("Method not implemented.");
-    }
-    rotate(_deg: number) {
-        // throw new Error("Method not implemented.");
     }
 
     public addPoint(point: Point) {
@@ -82,6 +77,35 @@ class Polygon implements Drawable, Transformable, Selectable {
 
         this.points = new_points
     }
+    // Centroid of a polygon
+    // 
+    getCentroid() {
+        let a = 0
+        for (let i = 0; i < this.points.length; ++i) {
+            a += this.points[i].x * this.points[(i+1)%this.points.length].y - this.points[i].y * this.points[(i+1)%this.points.length].x
+        }
+        a /= 2
+
+        let cx = 0
+        let cy = 0
+        for (let i = 0; i < this.points.length; ++i) {
+            cx += (this.points[i].x + this.points[(i+1)%this.points.length].x)*(this.points[i].x * this.points[(i+1)%this.points.length].y - this.points[(i+1)%this.points.length].x * this.points[i].y)
+            cy += (this.points[i].y + this.points[(i+1)%this.points.length].y)*(this.points[i].x * this.points[(i+1)%this.points.length].y - this.points[(i+1)%this.points.length].x * this.points[i].y)
+        }
+        cx /= 6 * a
+        cy /= 6 * a
+
+        return new Point(cx, cy, getColor())
+    }
+
+    // Centroid of vertices
+    getMiddlePoint() {
+        return new Point(
+            this.points.map((x) => x.x).reduce((prev, cur) => prev + cur) / this.points.length,
+            this.points.map((x) => x.y).reduce((prev, cur) => prev + cur) / this.points.length,
+            getColor()
+        )
+    }
 
     // negative = counterclockwise
     // positive = clockwise
@@ -118,12 +142,50 @@ class Polygon implements Drawable, Transformable, Selectable {
         return true
     }
     dilate(_scale: number) {
+        const mid = this.getCentroid()
         this.points.forEach((point) => {
+            point.x -= mid.x
+            point.y -= mid.y
             point.x = _scale * point.x
             point.y = _scale * point.y
+            point.x += mid.x
+            point.y += mid.y
         })
         this.refreshBuffer()
     }
+    rotate(_theta: number) {
+        _theta = _theta * (Math.PI/180) // degrees to radian
+        const cosTheta = Math.cos(_theta)
+        const sinTheta = Math.sin(_theta)
+        const mid = this.getCentroid()
+        const canvas = document.getElementById("canvas") as HTMLCanvasElement
+
+        this.points.forEach((point) => {
+            // translate centroid to origin
+            point.x -= mid.x
+            point.y -= mid.y
+
+            // scale points appropriately
+            point.x *= canvas.width
+            point.y *= canvas.height
+            
+            // rotate
+            let px = cosTheta * point.x - sinTheta * point.y
+            let py = sinTheta * point.x + cosTheta * point.y
+            point.x = px
+            point.y = py
+
+            // scale points back
+            point.x /= canvas.width
+            point.y /= canvas.height
+            
+            // translate centroid back
+            point.x += mid.x
+            point.y += mid.y
+        })
+        this.refreshBuffer()
+    }
+    
     showAllVertex(pointers: VertexPointer[]): void {
         while (pointers.length > 0) 
             pointers.pop()
