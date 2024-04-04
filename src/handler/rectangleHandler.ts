@@ -13,7 +13,7 @@ class RectangleHandler implements Handler{
 
     constructor(gl: WebGLRenderingContext, rectangles: Array<Rectangle> = []){
         this.gl = gl
-        this.isDrawing = false
+        this.isDrawing = true
         this.rectangles = rectangles
         this.rectangle = null
     }
