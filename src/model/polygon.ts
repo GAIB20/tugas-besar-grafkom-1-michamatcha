@@ -154,7 +154,25 @@ class Polygon implements Drawable, Transformable, Selectable {
         this.refreshBuffer()
     }
     rotate(_theta: number) {
-        
+        _theta = _theta * (Math.PI/180) // degrees to radian
+        const cosTheta = Math.cos(_theta)
+        const sinTheta = Math.sin(_theta)
+        const mid = this.getCentroid()
+
+        this.points.forEach((point) => {
+            point.x -= mid.x
+            point.y -= mid.y
+            
+            let px = cosTheta * point.x - sinTheta * point.y
+            let py = sinTheta * point.x + cosTheta * point.y
+
+            point.x = px
+            point.y = py
+
+            point.x += mid.x
+            point.y += mid.y
+        })
+        this.refreshBuffer()
     }
     
     showAllVertex(pointers: VertexPointer[]): void {

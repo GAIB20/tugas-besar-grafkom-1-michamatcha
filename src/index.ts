@@ -199,7 +199,7 @@ function dilate(){
     }else if(shapeActive === 3 && polygons[order]) {
       polygons[order].dilate(diff)
       polygons[order].showAllVertex(vertexPointers);
-  }
+    }
   }
 
 }
@@ -210,8 +210,13 @@ function rotate(){
     console.log(`diff: ${diff}`)
     if(shapeActive === 0 && lines[order]){
       lines[order].rotate(diff)
+      lines[order].showAllVertex(vertexPointers);
     }else if(shapeActive===1 && rectangles[order]){
       rectangles[order].rotate(diff)
+      rectangles[order].showAllVertex(vertexPointers);
+    }else if(shapeActive === 3 && polygons[order]) {
+      polygons[order].rotate(diff)
+      polygons[order].showAllVertex(vertexPointers);
     }
   }
 }
