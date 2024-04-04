@@ -18,12 +18,6 @@ class Line implements Drawable, Transformable, Selectable {
     }
 
 
-    public getMiddle(){
-        var res = new Point(0, 0, getColor())
-        res.x = (this.point1.x + this.point2.x)/2
-        res.y = (this.point1.y + this.point2.y) /2 
-        return res;
-    }
     public getGradient(){
         return (this.point2.y - this.point1.y) / (this.point2.x - this.point1.x)
     }
@@ -81,7 +75,7 @@ class Line implements Drawable, Transformable, Selectable {
         const cosTheta = Math.cos(_theta)
         const sinTheta = Math.sin(_theta);
         const rotationMatrix = [[cosTheta, -sinTheta], [sinTheta, cosTheta]]
-        const mid = this.getMiddle()
+        const mid = this.getMiddlePoint()
         
         // translate points to middle
         this.point1.x -= mid.x
@@ -100,7 +94,6 @@ class Line implements Drawable, Transformable, Selectable {
         this.point1 = p1
         this.point2 = p2
         
-
         // translate back
         this.point1.x += mid.x
         this.point1.y += mid.y
