@@ -81,26 +81,31 @@ class Line implements Drawable, Transformable, Selectable {
         const cosTheta = Math.cos(_theta)
         const sinTheta = Math.sin(_theta);
         const rotationMatrix = [[cosTheta, -sinTheta], [sinTheta, cosTheta]]
+        const mid = this.getMiddle()
         
         // translate points to middle
-        this.point1.x -= this.getMiddle().x
-        this.point1.y -= this.getMiddle().y
-        this.point2.x -= this.getMiddle().x
-        this.point2.y -= this.getMiddle().y
+        this.point1.x -= mid.x
+        this.point1.y -= mid.y
+        this.point2.x -= mid.x
+        this.point2.y -= mid.y
 
 
         // rotate points
-        this.point1.x = cosTheta * this.point1.x - sinTheta * this.point1.y
-        this.point1.y = sinTheta * this.point1.x + cosTheta * this.point1.y
-        this.point2.x = cosTheta * this.point2.x - sinTheta * this.point2.y
-        this.point2.y = sinTheta * this.point2.x + cosTheta * this.point2.y
+        var p1 = new Point(cosTheta * this.point1.x - sinTheta * this.point1.y,
+            sinTheta * this.point1.x + cosTheta * this.point1.y,
+            this.point1.color)
+        var p2 = new Point(cosTheta * this.point2.x - sinTheta * this.point2.y,
+            sinTheta * this.point2.x + cosTheta * this.point2.y,
+            this.point2.color)
+        this.point1 = p1
+        this.point2 = p2
         
 
         // translate back
-        this.point1.x += this.getMiddle().x
-        this.point1.y += this.getMiddle().y
-        this.point2.x += this.getMiddle().x
-        this.point2.y += this.getMiddle().y
+        this.point1.x += mid.x
+        this.point1.y += mid.y
+        this.point2.x += mid.x
+        this.point2.y += mid.y
         
     }
 
