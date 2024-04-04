@@ -10,6 +10,12 @@ class Polygon implements Drawable, Transformable, Selectable {
         this.points = []
         this.pointsBuffer = []
     }
+    dilate(_scale: number) {
+        // throw new Error("Method not implemented.");
+    }
+    rotate(_deg: number) {
+        // throw new Error("Method not implemented.");
+    }
 
     public addPoint(point: Point) {
         this.points.push(point)

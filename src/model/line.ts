@@ -1,8 +1,11 @@
+import * as math from 'mathjs'
 import Point from "./point"
+import { getColor } from '../utils/colorUtil'
 import Selectable from "./selectable"
 import VertexPointer from "./vertexPointer"
 
 class Line implements Drawable, Transformable, Selectable {
+
 
     point1: Point
     point2: Point
@@ -13,14 +16,14 @@ class Line implements Drawable, Transformable, Selectable {
     public setPoint2(_point2 : Point){
         this.point2 = _point2
     }
-    public translate(_deltaX : number, _deltaY: number){
-        this.point1.moveCoordinateX(_deltaX);
-        this.point2.moveCoordinateX(_deltaX);
-        this.point1.moveCoordinateY(_deltaY);
-        this.point2.moveCoordinateY(_deltaY);
+
+
+    public getMiddle(){
+        var res = new Point(0, 0, getColor())
+        res.x = (this.point1.x + this.point2.x)/2
+        res.y = (this.point1.y + this.point2.y) /2 
+        return res;
     }
-
-
     public getGradient(){
         return (this.point2.y - this.point1.y) / (this.point2.x - this.point1.x)
     }
@@ -48,6 +51,12 @@ class Line implements Drawable, Transformable, Selectable {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([...this.point1.toArray(), ...this.point2.toArray()]), gl.DYNAMIC_DRAW);
         gl.drawArrays(gl.LINES, 0, 2);
     }
+    public translate(_deltaX : number, _deltaY: number){
+        this.point1.moveCoordinateX(_deltaX);
+        this.point2.moveCoordinateX(_deltaX);
+        this.point1.moveCoordinateY(_deltaY);
+        this.point2.moveCoordinateY(_deltaY);
+    }
     dilate(_scale: number) {
         const mid = this.getMiddlePoint()
         this.point1.moveCoordinateX(-mid.x)
@@ -65,6 +74,34 @@ class Line implements Drawable, Transformable, Selectable {
         this.point1.moveCoordinateY(mid.y)
         this.point2.moveCoordinateX(mid.x)
         this.point2.moveCoordinateY(mid.y)
+    }
+
+    rotate(_theta: number) {
+        _theta = _theta * (Math.PI/180) // degrees to radian
+        const cosTheta = Math.cos(_theta)
+        const sinTheta = Math.sin(_theta);
+        const rotationMatrix = [[cosTheta, -sinTheta], [sinTheta, cosTheta]]
+        
+        // translate points to middle
+        this.point1.x -= this.getMiddle().x
+        this.point1.y -= this.getMiddle().y
+        this.point2.x -= this.getMiddle().x
+        this.point2.y -= this.getMiddle().y
+
+
+        // rotate points
+        this.point1.x = cosTheta * this.point1.x - sinTheta * this.point1.y
+        this.point1.y = sinTheta * this.point1.x + cosTheta * this.point1.y
+        this.point2.x = cosTheta * this.point2.x - sinTheta * this.point2.y
+        this.point2.y = sinTheta * this.point2.x + cosTheta * this.point2.y
+        
+
+        // translate back
+        this.point1.x += this.getMiddle().x
+        this.point1.y += this.getMiddle().y
+        this.point2.x += this.getMiddle().x
+        this.point2.y += this.getMiddle().y
+        
     }
 
     
