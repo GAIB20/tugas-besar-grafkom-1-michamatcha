@@ -1,6 +1,8 @@
 import Point from "./point";
+import Selectable from "./selectable";
+import VertexPointer from "./vertexPointer";
 
-class Polygon implements Drawable {
+class Polygon implements Drawable, Transformable, Selectable {
     points: Point[]
     pointsBuffer: number[]
 
@@ -86,7 +88,7 @@ class Polygon implements Drawable {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.pointsBuffer), gl.DYNAMIC_DRAW)
         gl.drawArrays(gl.TRIANGLES, 0, this.pointsBuffer.length / 6)
     }
-    // TODO test these two
+
     public translate(_deltaX: number, _deltaY: number) {
         this.points.forEach((point) => {
             point.moveCoordinateX(_deltaX)
@@ -115,6 +117,14 @@ class Polygon implements Drawable {
             point.y = _scale * point.y
         })
         this.refreshBuffer()
+    }
+    showAllVertex(pointers: VertexPointer[]): void {
+        while (pointers.length > 0) 
+            pointers.pop()
+        
+        this.points.forEach((point) => {
+            pointers.push(new VertexPointer(point.complement()))
+        })
     }
 }
 

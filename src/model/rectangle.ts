@@ -1,8 +1,10 @@
 import Point from "./point";
 import { getColor } from "../utils/colorUtil";
+import Selectable from "./selectable";
+import VertexPointer from "./vertexPointer";
 
 
-class Rectangle implements Drawable{
+class Rectangle implements Drawable, Transformable, Selectable{
 
 
     initialPoint : Point
@@ -56,6 +58,20 @@ class Rectangle implements Drawable{
     draw(gl: WebGLRenderingContext): void {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 6);
+    }
+
+    showAllVertex(pointers: VertexPointer[]): void {
+        while (pointers.length > 0) 
+            pointers.pop()
+        
+        const usedidx = [0, 1, 2, 5]
+        usedidx.forEach((i: number) => {
+            pointers.push(new VertexPointer(new Point(this.vertices[i * 6 + 0], this.vertices[i * 6 + 1], 
+                [this.vertices[i * 6 + 2], this.vertices[i * 6 + 3], this.vertices[i * 6 + 4], this.vertices[i * 6 + 5]])
+                .complement()
+            ))
+        });
+        
     }
 
 }

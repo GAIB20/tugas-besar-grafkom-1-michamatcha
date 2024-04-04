@@ -6,6 +6,7 @@ import Point from "./model/point";
 import Rectangle from "./model/rectangle";
 import { getColor } from "./utils/colorUtil";
 import Polygon from "./model/polygon";
+import VertexPointer from "./model/vertexPointer";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 if(canvas === null) {
@@ -16,7 +17,7 @@ const gl = canvas.getContext("webgl");
 if(gl === null){
   throw new Error("Couldnt get webgl context")
 }
-var shapeActive; // 0 : line, 1: rectangle, 2: square, 3: polygon
+var shapeActive; // 0 : line, 1: rectangle, 2: square, 3: polygon, 4: vertexPointers
 var order;
 
 const shapeButtons = document.getElementsByClassName("shape");
@@ -84,9 +85,31 @@ selectButton.addEventListener('click', function(){
         order = count
         break
       }
+      count--
+    }
+
+    // check pointer
+    count = vertexPointers.length - 1
+    for(let i = vertexPointers.length - 1; i >= 0; i--){
+      temp = vertexPointers[i].isCoordInside([new_point.x, new_point.y])
+      if(temp){
+        console.log(`Inside vertex ${count}`)
+        shapeActive = 4
+        order = count
+        break
+      }
+      count--
     }
     
-
+    if(shapeActive === 0 && lines[order]) { 
+      lines[order].showAllVertex(vertexPointers);
+    } else if(shapeActive === 1 && rectangles[order]) {
+      rectangles[order].showAllVertex(vertexPointers);
+    } else if(shapeActive === 3 && polygons[order]) {
+      polygons[order].showAllVertex(vertexPointers);
+    } else if (shapeActive === 4 && vertexPointers[order]) {
+      vertexPointers[order].showAllVertex(vertexPointers)
+    }
   }
 })
 
@@ -140,10 +163,13 @@ function translation(){
     console.log(`diffY: ${diffY}`)
     if(shapeActive === 0 && lines[order]) { 
         lines[order].translate(diffX, diffY);
+        lines[order].showAllVertex(vertexPointers);
     } else if(shapeActive === 1 && rectangles[order]) {
         rectangles[order].translate(diffX, diffY);
+        rectangles[order].showAllVertex(vertexPointers);
     } else if(shapeActive === 3 && polygons[order]) {
         polygons[order].translate(diffX, diffY)
+        polygons[order].showAllVertex(vertexPointers);
     }
   }
 }
@@ -154,10 +180,13 @@ function dilate(){
     console.log(`diff: ${diff}`)
     if(shapeActive === 0 && lines[order]){
       lines[order].dilate(diff)
+      lines[order].showAllVertex(vertexPointers);
     }else if(shapeActive === 1 && rectangles[order]){
       rectangles[order].dilate(diff)
+      rectangles[order].showAllVertex(vertexPointers);
     }else if(shapeActive === 3 && polygons[order]) {
       polygons[order].dilate(diff)
+      polygons[order].showAllVertex(vertexPointers);
   }
   }
 
@@ -188,6 +217,7 @@ function handleShapeButton(buttonId: string){
 const lines: Array<Line> = []
 const rectangles : Array <Rectangle> = []
 const polygons: Array<Polygon> = []
+const vertexPointers: Array<VertexPointer> = []
 
 
 // CREATE VERTEX SHADER
@@ -198,6 +228,7 @@ attribute vec4 colors;
 varying vec4 colors_frag;
 void main(void) {
   gl_Position = vec4(coordinates, 0.0, 1.0);
+  gl_PointSize = 10.0;
   colors_frag = colors;
 }
 `;
@@ -250,6 +281,9 @@ function drawScene() {
   polygons.forEach (element => {
     element.draw(gl);
   })
+  vertexPointers.forEach (element => {
+    element.draw(gl);
+  });
 
   window.requestAnimationFrame(drawScene);
 }
