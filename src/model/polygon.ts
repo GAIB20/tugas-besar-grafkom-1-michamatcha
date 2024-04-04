@@ -80,7 +80,22 @@ class Polygon implements Drawable, Transformable, Selectable {
     // Centroid of a polygon
     // 
     getCentroid() {
+        let a = 0
+        for (let i = 0; i < this.points.length; ++i) {
+            a += this.points[i].x * this.points[(i+1)%this.points.length].y - this.points[i].y * this.points[(i+1)%this.points.length].x
+        }
+        a /= 2
 
+        let cx = 0
+        let cy = 0
+        for (let i = 0; i < this.points.length; ++i) {
+            cx += (this.points[i].x + this.points[(i+1)%this.points.length].x)*(this.points[i].x * this.points[(i+1)%this.points.length].y - this.points[(i+1)%this.points.length].x * this.points[i].y)
+            cy += (this.points[i].y + this.points[(i+1)%this.points.length].y)*(this.points[i].x * this.points[(i+1)%this.points.length].y - this.points[(i+1)%this.points.length].x * this.points[i].y)
+        }
+        cx /= 6 * a
+        cy /= 6 * a
+
+        return new Point(cx, cy, getColor())
     }
 
     // Centroid of vertices
@@ -127,7 +142,7 @@ class Polygon implements Drawable, Transformable, Selectable {
         return true
     }
     dilate(_scale: number) {
-        const mid = this.getMiddlePoint()
+        const mid = this.getCentroid()
         this.points.forEach((point) => {
             point.x -= mid.x
             point.y -= mid.y
