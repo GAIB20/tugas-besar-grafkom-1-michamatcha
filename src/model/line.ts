@@ -1,6 +1,7 @@
 import Point from "./point"
 
 class Line implements Drawable {
+
     point1: Point
     point2: Point
 
@@ -17,6 +18,7 @@ class Line implements Drawable {
         this.point2.moveCoordinateY(_deltaY);
     }
 
+
     public getGradient(){
         return (this.point2.y - this.point1.y) / (this.point2.x - this.point1.x)
     }
@@ -30,6 +32,14 @@ class Line implements Drawable {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([...this.point1.toArray(), ...this.point2.toArray()]), gl.STATIC_DRAW);
         gl.drawArrays(gl.LINES, 0, 2);
     }
+    dilate(_scale: number) {
+        this.point1.x = _scale * this.point1.x
+        this.point1.y = _scale * this.point1.y
+        this.point2.x = _scale * this.point2.x
+        this.point2.y = _scale * this.point2.y
+    }
+
+    
 
     
 }

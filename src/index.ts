@@ -78,7 +78,7 @@ const translateXSlider = document.getElementById('translateX') as HTMLInputEleme
 const translateYSlider = document.getElementById('translateY') as HTMLInputElement
 const translateXValue = document.getElementById('translateXValue')
 const translateYValue = document.getElementById('translateYValue')
-const dilatationSlider = document.getElementById('dilatation')
+const dilatationSlider = document.getElementById('dilatation') as HTMLInputElement
 const dilatationValue = document.getElementById('dilatationValue')
 function updateSlider(slider, displayElement){
   displayElement.textContent = slider.value
@@ -103,16 +103,21 @@ translateYSlider.addEventListener('input', () => {
   updateSlider(translateYSlider, translateYValue)
   translation()
   previewY = parseFloat(translateYValue.textContent)
-  console.log(`prev: ${previewY}`)
+  console.log(`now: ${previewY}`)
 }
 )
-dilatationSlider.addEventListener('input', () => updateSlider(dilatationSlider, dilatationValue))
+
+var previewScale
+dilatationSlider.addEventListener('input', () => {
+  previewScale = parseFloat(dilatationValue.textContent)
+  updateSlider(dilatationSlider, dilatationValue)
+  dilate()
+  previewScale = parseFloat(dilatationValue.textContent)
+})
 
 const translateButton = document.getElementById("translateButton")
-
-
 function translation(){
-  if(currentAction == "translateButton"){
+  if(currentAction === "translateButton"){
     let diffX = (parseFloat(translateXSlider.value) - previewX) / 300;
     console.log(`diffX: ${diffX}`)
     let diffY = (parseFloat(translateYSlider.value) - previewY) / 300;
@@ -125,18 +130,19 @@ function translation(){
   }
 }
 
-// translateButton.addEventListener('click', function(){
-//   switch(shapeActive){
-//     case 0:
-//       lines[order].translate((parseFloat(translateXSlider.value) / 100), (parseFloat(translateYSlider.value) / 100))
-//     case 1:
-//       rectangles[order].translate(parseFloat(translateXSlider.value)/100, parseFloat(translateYSlider.value) / 100)
-//     case 2:
-//       console.log("square")
-//     case 3:
-//       console.log("polygon")
-//   }
-// })
+function dilate(){
+  if(currentAction === "dilateButton"){
+    let diff = (parseFloat(dilatationSlider.value))/previewScale
+    console.log(`diff: ${diff}`)
+    if(shapeActive === 0 && lines[order]){
+      lines[order].dilate(diff)
+    }else if(shapeActive === 1 && rectangles[order]){
+      rectangles[order].dilate(diff)
+    }
+  }
+
+}
+
 function handleShapeButton(buttonId: string){
   switch(buttonId){
     case "shapeLine":

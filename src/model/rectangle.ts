@@ -40,6 +40,14 @@ class Rectangle implements Drawable{
         this.setAllPointsByInput(this.initialPoint, this.secondPoint)
     }
 
+    dilate(_scale: number) {
+        this.initialPoint.x = (_scale * this.initialPoint.x)
+        this.initialPoint.y = (_scale * this.initialPoint.y)
+        this.secondPoint.x = (_scale * this.secondPoint.x)
+        this.secondPoint.y = (_scale * this.secondPoint.y)
+        this.setAllPointsByInput(this.initialPoint, this.secondPoint)
+    }
+
 
     isCoordInside(coord: [number, number]): boolean {
         return (coord[0] >= Math.min(this.initialPoint.x, this.secondPoint.x) && coord[0] <= Math.max(this.initialPoint.x, this.secondPoint.x)&&
