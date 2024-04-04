@@ -76,6 +76,7 @@ class Line implements Drawable, Transformable, Selectable {
         const sinTheta = Math.sin(_theta);
         const rotationMatrix = [[cosTheta, -sinTheta], [sinTheta, cosTheta]]
         const mid = this.getMiddlePoint()
+        const canvas = document.getElementById("canvas") as HTMLCanvasElement
         
         // translate points to middle
         this.point1.x -= mid.x
@@ -83,6 +84,11 @@ class Line implements Drawable, Transformable, Selectable {
         this.point2.x -= mid.x
         this.point2.y -= mid.y
 
+        // scale points appropriately
+        this.point1.x *= canvas.width
+        this.point1.y *= canvas.height
+        this.point2.x *= canvas.width
+        this.point2.y *= canvas.height
 
         // rotate points
         var p1 = new Point(cosTheta * this.point1.x - sinTheta * this.point1.y,
@@ -93,6 +99,12 @@ class Line implements Drawable, Transformable, Selectable {
             this.point2.color)
         this.point1 = p1
         this.point2 = p2
+
+        // scale points back
+        this.point1.x /= canvas.width
+        this.point1.y /= canvas.height
+        this.point2.x /= canvas.width
+        this.point2.y /= canvas.height
         
         // translate back
         this.point1.x += mid.x

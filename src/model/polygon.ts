@@ -158,17 +158,28 @@ class Polygon implements Drawable, Transformable, Selectable {
         const cosTheta = Math.cos(_theta)
         const sinTheta = Math.sin(_theta)
         const mid = this.getCentroid()
+        const canvas = document.getElementById("canvas") as HTMLCanvasElement
 
         this.points.forEach((point) => {
+            // translate centroid to origin
             point.x -= mid.x
             point.y -= mid.y
+
+            // scale points appropriately
+            point.x *= canvas.width
+            point.y *= canvas.height
             
+            // rotate
             let px = cosTheta * point.x - sinTheta * point.y
             let py = sinTheta * point.x + cosTheta * point.y
-
             point.x = px
             point.y = py
 
+            // scale points back
+            point.x /= canvas.width
+            point.y /= canvas.height
+            
+            // translate centroid back
             point.x += mid.x
             point.y += mid.y
         })
