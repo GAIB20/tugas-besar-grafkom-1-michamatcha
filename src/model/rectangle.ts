@@ -64,10 +64,19 @@ class Rectangle implements Drawable, Transformable, Selectable{
     }
 
     dilate(_scale: number) {
+        var middlePoint = this.getMiddlePoint()
+        this.initialPoint.moveCoordinateX(-middlePoint.x)
+        this.initialPoint.moveCoordinateY(-middlePoint.y)
+        this.secondPoint.moveCoordinateX(-middlePoint.x)
+        this.secondPoint.moveCoordinateY(-middlePoint.y)
         this.initialPoint.x = (_scale * this.initialPoint.x)
         this.initialPoint.y = (_scale * this.initialPoint.y)
         this.secondPoint.x = (_scale * this.secondPoint.x)
         this.secondPoint.y = (_scale * this.secondPoint.y)
+        this.initialPoint.moveCoordinateX(middlePoint.x)
+        this.initialPoint.moveCoordinateY(middlePoint.y)
+        this.secondPoint.moveCoordinateX(middlePoint.x)
+        this.secondPoint.moveCoordinateY(middlePoint.y)
         this.setAllPointsByInput(this.initialPoint, this.secondPoint)
     }
 
