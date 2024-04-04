@@ -89,7 +89,7 @@ class Rectangle implements Drawable, Transformable, Selectable{
         const sinTheta = Math.sin(_theta);
         const rotationMatrix = [[cosTheta, -sinTheta], [sinTheta, cosTheta]]
         var middlePoint = this.getMiddlePoint()
-        console.log(middlePoint)
+        const canvas = document.getElementById("canvas") as HTMLCanvasElement
 
         var point1 = this.points[0]
         var point2 = this.points[1]
@@ -103,9 +103,18 @@ class Rectangle implements Drawable, Transformable, Selectable{
             // translate point to origin
             points[i][0] -= middlePoint.x
             points[i][1] -= middlePoint.y
+
+            // scale points appropriately
+            points[i][0] *= canvas.width
+            points[i][1] *= canvas.height
+
             // rotate
             points[i] = [cosTheta * points[i][0] - sinTheta * points[i][1], sinTheta * points[i][0] + cosTheta * points[i][1]]
             
+            // scale points back
+            points[i][0] /= canvas.width
+            points[i][1] /= canvas.height
+
             // translate back
             points[i][0] += middlePoint.x
             points[i][1] += middlePoint.y
