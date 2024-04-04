@@ -3,4 +3,5 @@ interface Drawable {
     isCoordInside(coord: [number, number]) : boolean
     translate(_deltaX: number, _deltaY: number)
     dilate(_scale: number)
+    rotate(_theta: number)
 }

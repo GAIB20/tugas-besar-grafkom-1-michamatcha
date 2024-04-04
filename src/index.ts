@@ -82,6 +82,8 @@ const translateXValue = document.getElementById('translateXValue')
 const translateYValue = document.getElementById('translateYValue')
 const dilatationSlider = document.getElementById('dilatation') as HTMLInputElement
 const dilatationValue = document.getElementById('dilatationValue')
+const rotationSlider = document.getElementById('rotation') as HTMLInputElement
+const rotationDegrees = document.getElementById('rotationValue')
 function updateSlider(slider, displayElement){
   displayElement.textContent = slider.value
 }
@@ -117,6 +119,16 @@ dilatationSlider.addEventListener('input', () => {
   previewScale = parseFloat(dilatationValue.textContent)
 })
 
+var previewDegree
+rotationSlider.addEventListener('input', () =>{
+  previewDegree = parseFloat(rotationDegrees.textContent)
+  console.log(`preview: ${previewDegree}`)
+  updateSlider(rotationSlider, rotationDegrees)
+  rotate()
+  previewDegree = parseFloat(rotationDegrees.textContent)
+  console.log(`preview: ${previewDegree}`)
+})
+
 const translateButton = document.getElementById("translateButton")
 function translation(){
   if(currentAction === "translateButton"){
@@ -143,6 +155,18 @@ function dilate(){
     }
   }
 
+}
+
+function rotate(){
+  if(currentAction === "rotateButton"){
+    let diff = (parseFloat(rotationSlider.value)) - previewDegree
+    console.log(`diff: ${diff}`)
+    if(shapeActive === 0 && lines[order]){
+      lines[order].rotate(diff)
+    }else if(shapeActive===1 && rectangles[order]){
+      rectangles[order].rotate(diff)
+    }
+  }
 }
 
 function handleShapeButton(buttonId: string){
