@@ -238,16 +238,42 @@ class Square implements Drawable, Transformable, Selectable, Serializable {
         }
     }
     changeColor(id: number, color: [number, number, number, number]): void {
-        this.points[id].setColor(color)
-        for (let i = 0; i < 4; i++) {
-            this.vertices[id * 6 + 2 + i] = color[i]
-        }
+        var idtoptsidx = [[0,3], [1], [2,4], [5]]
+        idtoptsidx[id].forEach((idx) => {
+            this.points[idx].setColor(color)
+            for (let i = 0; i < 4; i++) {
+                this.vertices[idx * 6 + 2 + i] = color[i]
+            }
+        })
+        
     }
     commitMove(): void {
-        
+        // calculate rotation
+        this.rotation = (math.atan2(this.points[0].y - this.getMiddlePoint().y, this.points[0].x - this.getMiddlePoint().x) - Math.PI / 4) * 180 / Math.PI
+        this.rotation = (this.rotation + 360) % 360
     }
     movePoint(id: number, _posX: number, _posY: number): void {
-        
+        const mid = this.getMiddlePoint()
+        const canvas = document.getElementById("canvas") as HTMLCanvasElement
+        var deltaX = (_posX - mid.x) * canvas.width
+        var deltaY = (_posY - mid.y) * canvas.height
+
+        var idtoptsidx = [[0,3], [1], [2,4], [5]]
+        var loc = [[mid.x + deltaX / canvas.width, mid.y + deltaY / canvas.height], 
+                    [mid.x - deltaY / canvas.width, mid.y + deltaX / canvas.height],
+                    [mid.x - deltaX / canvas.width, mid.y - deltaY / canvas.height],
+                    [mid.x + deltaY / canvas.width, mid.y - deltaX / canvas.height]]
+        for (let i = 0; i < 4; i++) {
+            let real_i = (id + i) % 4;
+            idtoptsidx[real_i].forEach((j) => {
+                this.points[j].x = loc[i][0]
+                this.points[j].y = loc[i][1]
+                this.vertices[j * 6 + 0] = loc[i][0]
+                this.vertices[j * 6 + 1] = loc[i][1]
+            })
+        }
+
+        console.log(this.points)
     }
 
     draw(gl: WebGLRenderingContext): void {
