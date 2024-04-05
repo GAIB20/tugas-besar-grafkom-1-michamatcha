@@ -1,4 +1,4 @@
-class Point {
+class Point implements Serializable {
     x: number;
     y: number;
     color : [number, number, number, number]
@@ -41,7 +41,11 @@ class Point {
     public toArray(): Float32Array {
         return new Float32Array([this.x, this.y, ...this.color])
     }
-
+    fromJson(json: any): void {
+        this.x = json.x
+        this.y = json.y
+        this.color = json.color
+    }
 
 }
 export default Point;

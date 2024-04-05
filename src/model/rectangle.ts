@@ -5,7 +5,7 @@ import Selectable from "./selectable";
 import VertexPointer from "./vertexPointer";
 
 
-class Rectangle implements Drawable, Transformable, Selectable{
+class Rectangle implements Drawable, Transformable, Selectable, Serializable {
 
 
     initialPoint : Point
@@ -301,6 +301,21 @@ class Rectangle implements Drawable, Transformable, Selectable{
             ))
         });
         
+    }
+    fromJson(json: any): void {
+        this.initialPoint = new Point(0,0,[0,0,0,0])
+        this.initialPoint.fromJson(json.initialPoint)
+        this.secondPoint = new Point(0,0,[0,0,0,0])
+        this.secondPoint.fromJson(json.secondPoint)
+        this.vertices = json.vertices
+        this.points = []
+        json.points.forEach((point: any) => {
+            var tmp = new Point(0,0,[0,0,0,0])
+            tmp.fromJson(point)
+            this.points.push(tmp)
+        })
+        this.colors = json.colors
+        this.rotation = json.rotation
     }
 
 }

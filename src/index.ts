@@ -13,7 +13,6 @@ import { EmptyHandler } from "./handler/emptyHandler";
 import { AddPointHandler } from "./handler/addPointHandler";
 import Square from "./model/square";
 import { SquareHandler } from "./handler/squareHandler";
-import { square } from "mathjs";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 if(canvas === null) {
@@ -399,6 +398,63 @@ removePoint.addEventListener('click', (ev) => {
   }
 })
 
+const saveButton = document.getElementById("save")
+saveButton.addEventListener('click', (ev) => {
+  const alldata = {
+    'lines': lines,
+    'rectangles': rectangles,
+    'polygons': polygons,
+    'squares': squares
+  }
+  const jsonstr = JSON.stringify(alldata)
+  const blob = new Blob([jsonstr], {type: 'application/json'})
+  const url = URL.createObjectURL(blob)
+
+  const a = document.createElement('a')
+  a.href = url
+  a.download = "save-data" + new Date().toLocaleString()
+
+  a.click()
+  URL.revokeObjectURL(url)
+})
+
+const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+fileInput.addEventListener('change', async () => {
+  const selectedFile = fileInput.files?.[0];
+  if (selectedFile) {
+    let allshape = JSON.parse(await selectedFile.text())
+    while(lines.length) lines.pop()
+    while(rectangles.length) rectangles.pop()
+    while(polygons.length) polygons.pop()
+    while(squares.length) squares.pop()
+    
+    while(allshape.lines.length) {
+      var saveLine = allshape.lines.pop()
+      var tmpLine = new Line()
+      tmpLine.fromJson(saveLine)
+      lines.push(tmpLine)
+    }
+    while(allshape.rectangles.length) {
+      var saveRect = allshape.rectangles.pop()
+      var tmpRect = new Rectangle()
+      tmpRect.fromJson(saveRect)
+      rectangles.push(tmpRect)
+    }
+    while(allshape.polygons.length) {
+      var savePoly = allshape.polygons.pop()
+      var tmpPoly = new Polygon()
+      tmpPoly.fromJson(savePoly)
+      polygons.push(tmpPoly)
+    }
+    while(allshape.squares.length) {
+      var saveSquare = allshape.squares.pop()
+      var tmpSquare = new Square()
+      tmpSquare.fromJson(saveSquare)
+      squares.push(tmpSquare)
+    }
+
+  } 
+});
 
 
 const lines: Array<Line> = []

@@ -3,7 +3,7 @@ import Point from "./point";
 import Selectable from "./selectable";
 import VertexPointer from "./vertexPointer";
 
-class Polygon implements Drawable, Transformable, Selectable {
+class Polygon implements Drawable, Transformable, Selectable, Serializable {
     points: Point[]
     pointsBuffer: number[]
 
@@ -217,6 +217,16 @@ class Polygon implements Drawable, Transformable, Selectable {
         this.points.forEach((point) => {
             pointers.push(new VertexPointer(point.complement()))
         })
+    }
+
+    fromJson(json: any): void {
+        this.points = []
+        json.points.forEach((point) => {
+            var tmp = new Point(0,0,[0,0,0,0])
+            tmp.fromJson(point)
+            this.points.push(tmp)
+        })
+        this.pointsBuffer = json.pointsBuffer
     }
 }
 

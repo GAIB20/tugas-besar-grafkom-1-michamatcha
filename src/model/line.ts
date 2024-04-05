@@ -4,7 +4,7 @@ import { getColor } from '../utils/colorUtil'
 import Selectable from "./selectable"
 import VertexPointer from "./vertexPointer"
 
-class Line implements Drawable, Transformable, Selectable {
+class Line implements Drawable, Transformable, Selectable, Serializable {
 
 
     point1: Point
@@ -139,11 +139,16 @@ class Line implements Drawable, Transformable, Selectable {
         }
     }
     commitMove(): void {
-        
+        // Empty!
     }
 
     
-
+    fromJson(json: any): void {
+        this.point1 = new Point(0,0,[0,0,0,0])
+        this.point1.fromJson(json.point1)
+        this.point2 = new Point(0,0,[0,0,0,0])
+        this.point2.fromJson(json.point2)
+    }
     
 }
 

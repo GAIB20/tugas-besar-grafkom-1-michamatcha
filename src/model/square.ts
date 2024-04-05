@@ -4,7 +4,7 @@ import * as math from 'mathjs'
 import Selectable from "./selectable";
 import VertexPointer from "./vertexPointer";
 
-class Square implements Drawable, Transformable, Selectable {
+class Square implements Drawable, Transformable, Selectable, Serializable {
     point1: Point
     point2: Point
     point3: Point
@@ -17,6 +17,7 @@ class Square implements Drawable, Transformable, Selectable {
     vertices: number[] = [];
     points: Point[];
     colors: number[];
+    rotation: number = 0;
 
     setSideLength(_length){
         this.sideLength = _length
@@ -134,6 +135,7 @@ class Square implements Drawable, Transformable, Selectable {
     rotate(_theta: number) {
         console.log(`point 1 : ${this.initialPoint.x}, ${this.initialPoint.y}`)
         console.log(`point 2 : ${this.secondPoint.x}, ${this.secondPoint.y}`)
+        this.rotation += _theta
         _theta = _theta * (Math.PI/180) // degrees to radian
         console.log(`radian : ${_theta}`)
         const cosTheta = Math.cos(_theta)
@@ -268,6 +270,37 @@ class Square implements Drawable, Transformable, Selectable {
                 )
             );
         });
+    }
+
+    fromJson(json: any): void {
+        this.point1 = new Point(0,0,[0,0,0,0])
+        this.point1.fromJson(json.point1)
+        this.point2 = new Point(0,0,[0,0,0,0])
+        this.point2.fromJson(json.point2)
+        this.point3 = new Point(0,0,[0,0,0,0])
+        this.point3.fromJson(json.point3)
+        this.point4 = new Point(0,0,[0,0,0,0])
+        this.point4.fromJson(json.point4)
+        this.point5 = new Point(0,0,[0,0,0,0])
+        this.point5.fromJson(json.point5)
+        this.point6 = new Point(0,0,[0,0,0,0])
+        this.point6.fromJson(json.point6)
+        this.sideLength = json.sideLength
+
+        this.initialPoint = new Point(0,0,[0,0,0,0])
+        this.initialPoint.fromJson(json.initialPoint)
+        this.secondPoint = new Point(0,0,[0,0,0,0])
+        this.secondPoint.fromJson(json.secondPoint)
+
+        this.vertices = json.vertices
+        this.points = []
+        json.points.forEach((point) => {
+            var tmp = new Point(0,0,[0,0,0,0])
+            tmp.fromJson(point)
+            this.points.push(tmp)
+        })
+        this.colors = json.colors
+        this.rotation = json.rotation
     }
 }
 
