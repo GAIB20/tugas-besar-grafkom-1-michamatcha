@@ -57,11 +57,22 @@ class Rectangle implements Drawable, Transformable, Selectable, Serializable {
         this.points = [point1, point2, point3, point4, point5, point6]
     }
     translate(_deltaX: number, _deltaY: number) {
-        this.initialPoint.moveCoordinateX(_deltaX)
-        this.secondPoint.moveCoordinateX(_deltaX)
-        this.initialPoint.moveCoordinateY(_deltaY)
-        this.secondPoint.moveCoordinateY(_deltaY)
-        this.setAllPointsByInput(this.initialPoint, this.secondPoint)
+        // move this.points
+        // move this.vertices
+        // move this.initialPoint, this.secondPoint (idx 0 and 2, respectively)
+        this.points.forEach((point) => {
+            point.moveCoordinateX(_deltaX)
+            point.moveCoordinateY(_deltaY)
+        })
+
+        for (let i= 0; i < 6; i++){
+            // move vertices
+            this.vertices[i * 6 + 0] += _deltaX
+            this.vertices[i * 6 + 1] += _deltaY
+        }
+
+        this.initialPoint = this.points[0]
+        this.secondPoint = this.points[2]
     }
 
     dilate(_scale: number) {
