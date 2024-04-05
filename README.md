@@ -1,24 +1,30 @@
-# New Project
+# Tugas Besar Grafika Komputer 1
 
-> ✨ Bootstrapped with Create Snowpack App (CSA).
+| Anggota Kelompok | NIM |
+|-----------------|-----------------|
+| Yudi Kurniawan    | 10023634    |
+| Michael Utama   | 13521137    |
+| Kandida Edgina Gunawan    | 13521155    |
 
-## Available Scripts
 
-### npm start
+## Daftar Isi
+- [Deskripsi Singkat](#deskripsi-singkat)
+- [Penjelasan Fungsi](#penjelasan-fungsi)
+- [Cara Instalasi Program](#cara-instalasi-program)
+- [Cara Menjalankan Program](#cara-menjalankan-program)
 
-Runs the app in the development mode.
-Open http://localhost:8080 to view it in the browser.
+## Deskripsi Singkat
+Program yang dibuat merupakan program kloningan Photoshop yang dapat melakukan berbagai fungsi dasar kanvas 2D seperti menggambar (line, rectangle, square, convex polygon), melakukan berbagai transformasi pada objek (translasi, dilatasi, dan rotasi), menggerakkan titik sudut, menambah dan menghapus titik polygon, mengubah warna titik sudut, serta menyimpan dan meload model. Program ini dibangun dengan menggunakan library WebGL dan beberapa pendukung library lain seperti math.
 
-The page will reload if you make edits.
-You will also see any lint errors in the console.
 
-### npm run build
+## Penjelasan Fungsi
 
-Builds a static copy of your site to the `build/` folder.
-Your app is ready to be deployed!
 
-**For the best production performance:** Add a build bundler plugin like [@snowpack/plugin-webpack](https://github.com/snowpackjs/snowpack/tree/main/plugins/plugin-webpack) or [snowpack-plugin-rollup-bundle](https://github.com/ParamagicDev/snowpack-plugin-rollup-bundle) to your `snowpack.config.mjs` config file.
 
-### Q: What about Eject?
+## Cara Instalasi Program
+1. Melakukan perintah `git clone` repository ini
+2. Jalankan perintah `npm install`
 
-No eject needed! Snowpack guarantees zero lock-in, and CSA strives for the same.
+## Cara Menjalankan Program
+1. Jalankan perintah `npm start`
+2. Open `http://localhost:8080/` from your browser
