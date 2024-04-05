@@ -63,7 +63,8 @@ label {
   }
 
   canvas {
-    height: 50vh; /* Adjust canvas height on smaller screens */
+    height: 100%; /* Adjust canvas height on smaller screens */
+    width: 100%;
   }
 
   .sidebar {
