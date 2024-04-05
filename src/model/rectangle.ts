@@ -13,6 +13,7 @@ class Rectangle implements Drawable, Transformable, Selectable{
     vertices: number[] = []
     points : Point[]
     colors: number[]
+    rotation: number = 0 // in degree
 
 
     setInitialPoint(_point: Point){
@@ -89,6 +90,7 @@ class Rectangle implements Drawable, Transformable, Selectable{
     rotate(_theta: number) { // theta in degrees
         console.log(`point 1 : ${this.initialPoint.x}, ${this.initialPoint.y}`)
         console.log(`point 2 : ${this.secondPoint.x}, ${this.secondPoint.y}`)
+        this.rotation += _theta
         _theta = _theta * (Math.PI/180) // degrees to radian
         console.log(`radian : ${_theta}`)
         const cosTheta = Math.cos(_theta)
@@ -133,8 +135,8 @@ class Rectangle implements Drawable, Transformable, Selectable{
 
         this.secondPoint.x = points[2][0]
         this.secondPoint.y = points[2][1]
-        this.vertices = [...points[0],...getColor(),...points[1], ... getColor(),... points[2], ... getColor(),
-                        ...points[3], ... getColor(),... points[4],...getColor(), ...points[5], ...getColor()]
+        this.vertices = [...points[0], ... point1.getColor(),...points[1], ... point2.getColor(),... points[2], ... point3.getColor(),
+                        ...points[3], ... point4.getColor(),... points[4],...point5.getColor(), ...points[5], ...point6.getColor()]
         console.log(`this: ${this.vertices}`)
 
     }
@@ -173,6 +175,118 @@ class Rectangle implements Drawable, Transformable, Selectable{
     draw(gl: WebGLRenderingContext): void {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 6);
+    }
+    changeColor(id: number, color: [number, number, number, number]): void {
+        if (id === 0) {
+            for (let i = 0; i < 4; i++) {
+                this.vertices[0 * 6 + 2 + i] = color[i]
+            }
+            this.points[0].setColor(color)
+            for (let i = 0; i < 4; i++) {
+                this.vertices[3 * 6 + 2 + i] = color[i]
+            }
+            this.points[3].setColor(color)
+        }
+        else if (id === 1) {
+            for (let i = 0; i < 4; i++) {
+                this.vertices[1 * 6 + 2 + i] = color[i]
+            }
+            this.points[1].setColor(color)
+        }
+        else if (id === 2) {
+            for (let i = 0; i < 4; i++) {
+                this.vertices[2 * 6 + 2 + i] = color[i]
+            }
+            this.points[2].setColor(color)
+            for (let i = 0; i < 4; i++) {
+                this.vertices[4 * 6 + 2 + i] = color[i]
+            }
+            this.points[4].setColor(color)
+        }
+        else if (id === 3) {
+            for (let i = 0; i < 4; i++) {
+                this.vertices[5 * 6 + 2 + i] = color[i]
+            }
+            this.points[5].setColor(color)
+        }
+    }
+    changeAllColor(color: [number, number, number, number]): void {
+        this.points.forEach((point) => {
+            point.setColor(color)
+        })
+        for (let j = 0; j < 6; ++j) {
+            for (let i = 0; i < 4; i++) {
+                this.vertices[j * 6 + 2 + i] = color[i]
+            }
+        }
+    }
+    movePoint(id: number, _posX: number, _posY: number): void {
+        const temprot = this.rotation
+        const _theta = -temprot * (Math.PI/180)
+
+        // Rotate new position, centered around middlepoint
+        const cosTheta = Math.cos(_theta)
+        const sinTheta = Math.sin(_theta);
+        const canvas = document.getElementById("canvas") as HTMLCanvasElement
+        const mid = this.getMiddlePoint()
+        _posX -= mid.x
+        _posY -= mid.y
+
+        _posX *= canvas.width
+        _posY *= canvas.height
+
+        let _pos = [cosTheta * _posX - sinTheta * _posY, sinTheta * _posX + cosTheta * _posY]
+        _posX = _pos[0]
+        _posY = _pos[1]
+
+        _posX /= canvas.width
+        _posY /= canvas.height
+
+        _posX += mid.x
+        _posY += mid.y
+
+        this.rotate(-this.rotation)
+
+        if (id === 0) {
+            this.vertices[0 * 6 + 0] = this.points[0].x = _posX
+            this.vertices[0 * 6 + 1] = this.points[0].y = _posY
+            this.vertices[3 * 6 + 0] = this.points[3].x = _posX
+            this.vertices[3 * 6 + 1] = this.points[3].y = _posY
+
+            this.vertices[5 * 6 + 0] = this.points[5].x = _posX
+            this.vertices[1 * 6 + 1] = this.points[1].y = _posY
+        }
+        else if (id === 1) {
+            this.vertices[1 * 6 + 0] = this.points[1].x = _posX
+            this.vertices[1 * 6 + 1] = this.points[1].y = _posY
+
+            this.vertices[2 * 6 + 0] = this.points[2].x = _posX
+            this.vertices[0 * 6 + 1] = this.points[0].y = _posY
+            this.vertices[4 * 6 + 0] = this.points[4].x = _posX
+            this.vertices[3 * 6 + 1] = this.points[3].y = _posY
+        }
+        else if (id === 2) {
+            this.vertices[2 * 6 + 0] = this.points[2].x = _posX
+            this.vertices[2 * 6 + 1] = this.points[2].y = _posY
+            this.vertices[4 * 6 + 0] = this.points[4].x = _posX
+            this.vertices[4 * 6 + 1] = this.points[4].y = _posY
+
+            this.vertices[1 * 6 + 0] = this.points[1].x = _posX
+            this.vertices[5 * 6 + 1] = this.points[5].y = _posY
+        }
+        else if (id === 3) {
+            this.vertices[5 * 6 + 0] = this.points[5].x = _posX
+            this.vertices[5 * 6 + 1] = this.points[5].y = _posY
+
+            this.vertices[0 * 6 + 0] = this.points[0].x = _posX
+            this.vertices[2 * 6 + 1] = this.points[2].y = _posY
+            this.vertices[3 * 6 + 0] = this.points[3].x = _posX
+            this.vertices[4 * 6 + 1] = this.points[4].y = _posY
+        }
+        this.rotate(temprot)
+    }
+    commitMove(): void {
+        
     }
 
     showAllVertex(pointers: VertexPointer[]): void {

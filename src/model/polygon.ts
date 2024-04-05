@@ -17,6 +17,11 @@ class Polygon implements Drawable, Transformable, Selectable {
         this.grahamScan()
         this.refreshBuffer()
     }
+    public removePointFromId(id: number) {
+        this.points.splice(id, 1)
+        this.grahamScan()
+        this.refreshBuffer()
+    }
 
     public refreshBuffer() {
         this.pointsBuffer = []
@@ -118,6 +123,16 @@ class Polygon implements Drawable, Transformable, Selectable {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.pointsBuffer), gl.DYNAMIC_DRAW)
         gl.drawArrays(gl.TRIANGLES, 0, this.pointsBuffer.length / 6)
     }
+    changeColor(id: number, color: [number, number, number, number]): void {
+        this.points[id].setColor(color)
+        this.refreshBuffer()
+    }
+    changeAllColor(color: [number, number, number, number]): void {
+        this.points.forEach((point) => {
+            point.setColor(color)
+        })
+        this.refreshBuffer()
+    }
 
     public translate(_deltaX: number, _deltaY: number) {
         this.points.forEach((point) => {
@@ -183,6 +198,15 @@ class Polygon implements Drawable, Transformable, Selectable {
             point.x += mid.x
             point.y += mid.y
         })
+        this.refreshBuffer()
+    }
+    movePoint(id: number, _posX: number, _posY: number): void {
+        this.points[id].x = _posX;
+        this.points[id].y = _posY;
+        this.refreshBuffer()
+    }
+    commitMove(): void {
+        this.grahamScan()
         this.refreshBuffer()
     }
     
