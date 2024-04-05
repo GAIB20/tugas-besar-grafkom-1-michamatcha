@@ -358,6 +358,36 @@ movePoint.addEventListener('click', (ev) => {
   }
 })
 
+// delete
+const deleteButton = document.getElementById("delete")
+deleteButton.addEventListener('click', (ev) => {
+  if (pointOrder != -1) {
+    alert("Can only delete shape, not point")
+    return
+  }
+
+  switch (shapeActive) {
+    case 0:
+      // hapus line
+      lines.splice(order, 1)
+      break
+    case 1:
+      // hapus rect
+      rectangles.splice(order, 1)
+      break
+    case 2:
+      // hapus square
+      squares.splice(order, 1)
+      break
+    case 3:
+      // hapus polygon
+      polygons.splice(order, 1)
+      break
+  }
+  vertexPointers.splice(0, vertexPointers.length)
+
+})
+
 // polygon tools
 const addPoint = document.getElementById("addPoint")
 addPoint.addEventListener('click', (ev) => {
