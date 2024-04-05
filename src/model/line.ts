@@ -128,6 +128,19 @@ class Line implements Drawable, Transformable, Selectable {
         this.point2.y += mid.y
         
     }
+    movePoint(id: number, _posX: number, _posY: number): void {
+        if (id === 0) {
+            this.point1.x = _posX
+            this.point1.y = _posY
+        }
+        else if (id === 1) {
+            this.point2.x = _posX
+            this.point2.y = _posY
+        }
+    }
+    commitMove(): void {
+        
+    }
 
     
 

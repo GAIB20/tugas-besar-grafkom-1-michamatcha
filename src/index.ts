@@ -8,6 +8,7 @@ import { getColor } from "./utils/colorUtil";
 import Polygon from "./model/polygon";
 import VertexPointer from "./model/vertexPointer";
 import Selectable from "./model/selectable";
+import { MovePointHandler } from "./handler/movePointHandler";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 if(canvas === null) {
@@ -21,6 +22,12 @@ if(gl === null){
 var shapeActive; // 0 : line, 1: rectangle, 2: square, 3: polygon
 var order;
 var pointOrder = -1; // -1: no point picked
+
+const selectNone = () => {
+  shapeActive = -1;
+  order = -1;
+  pointOrder = -1;
+}
 
 const shapeButtons = document.getElementsByClassName("shape");
 Array.from(shapeButtons).forEach(button =>{
@@ -281,10 +288,34 @@ colorPicker.addEventListener('change', (ev) => {
       else {
         shapeSelected.changeColor(pointOrder, getColor())
       }
-      console.log('hi this is shape selected part')
     }
 
-    console.log('hi this is color picker')
+})
+
+// move point
+const movePoint = document.getElementById("movePoint") as HTMLElement
+movePoint.addEventListener('click', (ev) => {
+  let shapeSelected: Transformable = null
+  switch (shapeActive) {
+    case 0:
+      shapeSelected = lines[order]
+      break
+    case 1:
+      shapeSelected = rectangles[order]
+      break
+    case 2:
+      break
+    case 3:
+      shapeSelected = polygons[order]
+      break
+  }
+
+  if (shapeSelected && pointOrder != -1) {
+      changeCurrentHandler(new MovePointHandler(gl, shapeSelected, pointOrder, vertexPointers, selectNone))
+  }
+  else {
+    alert("Select any point before pressing move point")
+  }
 })
 
 

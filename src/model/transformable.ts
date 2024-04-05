@@ -15,4 +15,7 @@ interface Transformable {
     // 4. scale back
     // 5. translate its centroid back
     rotate(_theta: number);
+    // move point:id (id must be same from selectable)
+    movePoint(id: number, _posX: number, _posY: number): void;
+    commitMove(): void;
 }

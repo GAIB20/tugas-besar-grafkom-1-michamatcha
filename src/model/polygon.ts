@@ -195,6 +195,15 @@ class Polygon implements Drawable, Transformable, Selectable {
         })
         this.refreshBuffer()
     }
+    movePoint(id: number, _posX: number, _posY: number): void {
+        this.points[id].x = _posX;
+        this.points[id].y = _posY;
+        this.refreshBuffer()
+    }
+    commitMove(): void {
+        this.grahamScan()
+        this.refreshBuffer()
+    }
     
     showAllVertex(pointers: VertexPointer[]): void {
         while (pointers.length > 0) 

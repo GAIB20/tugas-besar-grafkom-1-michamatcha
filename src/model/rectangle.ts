@@ -13,6 +13,7 @@ class Rectangle implements Drawable, Transformable, Selectable{
     vertices: number[] = []
     points : Point[]
     colors: number[]
+    rotation: number = 0 // in degree
 
 
     setInitialPoint(_point: Point){
@@ -83,6 +84,7 @@ class Rectangle implements Drawable, Transformable, Selectable{
     rotate(_theta: number) { // theta in degrees
         console.log(`point 1 : ${this.initialPoint.x}, ${this.initialPoint.y}`)
         console.log(`point 2 : ${this.secondPoint.x}, ${this.secondPoint.y}`)
+        this.rotation += _theta
         _theta = _theta * (Math.PI/180) // degrees to radian
         console.log(`radian : ${_theta}`)
         const cosTheta = Math.cos(_theta)
@@ -186,6 +188,47 @@ class Rectangle implements Drawable, Transformable, Selectable{
                 this.vertices[j * 6 + 2 + i] = color[i]
             }
         }
+    }
+    movePoint(id: number, _posX: number, _posY: number): void {
+        if (id === 0) {
+            this.vertices[0 * 6 + 0] = this.points[0].x = _posX
+            this.vertices[0 * 6 + 1] = this.points[0].y = _posY
+            this.vertices[3 * 6 + 0] = this.points[3].x = _posX
+            this.vertices[3 * 6 + 1] = this.points[3].y = _posY
+
+            this.vertices[5 * 6 + 0] = this.points[5].x = _posX
+            this.vertices[1 * 6 + 1] = this.points[1].y = _posY
+        }
+        else if (id === 1) {
+            this.vertices[1 * 6 + 0] = this.points[1].x = _posX
+            this.vertices[1 * 6 + 1] = this.points[1].y = _posY
+
+            this.vertices[2 * 6 + 0] = this.points[2].x = _posX
+            this.vertices[0 * 6 + 1] = this.points[0].y = _posY
+            this.vertices[4 * 6 + 0] = this.points[4].x = _posX
+            this.vertices[3 * 6 + 1] = this.points[3].y = _posY
+        }
+        else if (id === 2) {
+            this.vertices[2 * 6 + 0] = this.points[2].x = _posX
+            this.vertices[2 * 6 + 1] = this.points[2].y = _posY
+            this.vertices[4 * 6 + 0] = this.points[4].x = _posX
+            this.vertices[4 * 6 + 1] = this.points[4].y = _posY
+
+            this.vertices[1 * 6 + 0] = this.points[1].x = _posX
+            this.vertices[5 * 6 + 1] = this.points[5].y = _posY
+        }
+        else if (id === 3) {
+            this.vertices[5 * 6 + 0] = this.points[5].x = _posX
+            this.vertices[5 * 6 + 1] = this.points[5].y = _posY
+
+            this.vertices[0 * 6 + 0] = this.points[0].x = _posX
+            this.vertices[2 * 6 + 1] = this.points[2].y = _posY
+            this.vertices[3 * 6 + 0] = this.points[3].x = _posX
+            this.vertices[4 * 6 + 1] = this.points[4].y = _posY
+        }
+    }
+    commitMove(): void {
+        
     }
 
     showAllVertex(pointers: VertexPointer[]): void {
