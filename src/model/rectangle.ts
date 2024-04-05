@@ -34,8 +34,8 @@ class Rectangle implements Drawable, Transformable, Selectable{
     }
     getMiddlePoint(): Point{
         var res = new Point(0, 0, getColor())
-        res.x = Math.min(this.initialPoint.x, this.secondPoint.x) + (this.getWidth()/2)
-        res.y = Math.min(this.initialPoint.y, this.secondPoint.y) + (this.getHeight()/2)
+        res.x = (this.initialPoint.x + this.secondPoint.x) /2
+        res.y = (this.initialPoint.y + this.secondPoint.y) /2
         return res
     }
     setAllPointsByInput(_point1: Point, _point2: Point){
@@ -64,20 +64,26 @@ class Rectangle implements Drawable, Transformable, Selectable{
     }
 
     dilate(_scale: number) {
+        var tempPoints : Point[]
         var middlePoint = this.getMiddlePoint()
-        this.initialPoint.moveCoordinateX(-middlePoint.x)
-        this.initialPoint.moveCoordinateY(-middlePoint.y)
-        this.secondPoint.moveCoordinateX(-middlePoint.x)
-        this.secondPoint.moveCoordinateY(-middlePoint.y)
-        this.initialPoint.x = (_scale * this.initialPoint.x)
-        this.initialPoint.y = (_scale * this.initialPoint.y)
-        this.secondPoint.x = (_scale * this.secondPoint.x)
-        this.secondPoint.y = (_scale * this.secondPoint.y)
-        this.initialPoint.moveCoordinateX(middlePoint.x)
-        this.initialPoint.moveCoordinateY(middlePoint.y)
-        this.secondPoint.moveCoordinateX(middlePoint.x)
-        this.secondPoint.moveCoordinateY(middlePoint.y)
-        this.setAllPointsByInput(this.initialPoint, this.secondPoint)
+        tempPoints = this.points
+        for(let i = 0; i < 6; i++){
+            tempPoints[i].moveCoordinateX(-middlePoint.x)
+            tempPoints[i].moveCoordinateY(-middlePoint.y)
+
+            tempPoints[i].x *= _scale
+            tempPoints[i].y *= _scale
+
+            tempPoints[i].moveCoordinateX(middlePoint.x)
+            tempPoints[i].moveCoordinateY(middlePoint.y)
+        }
+        this.points = tempPoints
+        this.vertices = [this.points[0].x, this.points[0].y, ...this.points[0].getColor(), 
+            this.points[1].x, this.points[1].y, ...this.points[1].getColor(),
+            this.points[2].x, this.points[2].y, ...this.points[2].getColor(),
+            this.points[3].x, this.points[3].y, ...this.points[3].getColor(),
+            this.points[4].x, this.points[4].y, ...this.points[4].getColor(),
+            this.points[5].x, this.points[5].y, ...this.points[5].getColor()]
     }
 
     rotate(_theta: number) { // theta in degrees
@@ -134,10 +140,35 @@ class Rectangle implements Drawable, Transformable, Selectable{
     }
 
 
-
     isCoordInside(coord: [number, number]): boolean {
-        return (coord[0] >= Math.min(this.initialPoint.x, this.secondPoint.x) && coord[0] <= Math.max(this.initialPoint.x, this.secondPoint.x)&&
-        coord[1] >= Math.min(this.initialPoint.y, this.secondPoint.y) && coord[1] <= Math.max(this.initialPoint.y, this.secondPoint.y)) 
+        var tempPoints : Point[] = []
+        tempPoints[0] = this.points[0]
+        tempPoints[1] = this.points[1]
+        tempPoints[2] = this.points[2]
+        tempPoints[3] = this.points[3]
+
+        let signs : number[] = []
+        for(let i = 0; i < 4; i++){
+            const p1 =tempPoints[i]
+            const p2 = tempPoints[(i+1) % 4]
+            const edgeVector = { x: p2.x - p1.x, y: p2.y - p1.y };
+            const pointVector = { x: coord[0] - p1.x, y: coord[1] - p1.y };
+            
+        
+            const crossProduct = edgeVector.x * pointVector.y - edgeVector.y * pointVector.x;
+            if (crossProduct < 0) {
+              signs.push(-1);
+            } else if (crossProduct > 0) {
+              signs.push(1);
+            } else {
+              signs.push(0); 
+            }
+
+        }
+        const allPositiveOrZero = signs.every(sign => sign >= 0);
+        const allNegativeOrZero = signs.every(sign => sign <= 0);
+      
+        return allPositiveOrZero || allNegativeOrZero;
     }
     draw(gl: WebGLRenderingContext): void {
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW)
