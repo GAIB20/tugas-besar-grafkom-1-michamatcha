@@ -132,61 +132,66 @@ class Square implements Drawable, Transformable, Selectable {
     }
 
     rotate(_theta: number) {
+        console.log(`point 1 : ${this.initialPoint.x}, ${this.initialPoint.y}`)
+        console.log(`point 2 : ${this.secondPoint.x}, ${this.secondPoint.y}`)
         _theta = _theta * (Math.PI/180) // degrees to radian
         console.log(`radian : ${_theta}`)
         const cosTheta = Math.cos(_theta)
         const sinTheta = Math.sin(_theta);
-
-        var mid = this.getMiddlePoint()
+        var middlePoint = this.getMiddlePoint()
         const canvas = document.getElementById("canvas") as HTMLCanvasElement
-        
+
         var point1 = this.points[0]
         var point2 = this.points[1]
         var point3 = this.points[2]
         var point4 = this.points[3]
         var point5 = this.points[4]
         var point6 = this.points[5]
-        var temp = [[point1.x, point1.y], [point2.x, point2.y], [point3.x, point3.y], [point4.x, point4.y], [point5.x, point5.y], [point6.x, point6.y]]
-        // for(let i = 0; i < 6; i++){
-        //     temp[i] = this.points[i]
-        // }
-        for(let i = 0; i< 6; i++){
-            temp[i][0] -= mid.x
-            temp[i][1] -= mid.x
-            temp[i][0] *= canvas.width
-            temp[i][1] *= canvas.height
 
-            temp[i][0] = cosTheta * temp[i][0] - sinTheta * temp[i][1]
-            temp[i][1] = sinTheta * temp[i][0] + cosTheta * temp[i][1]
+        var points = [[point1.x, point1.y], [point2.x, point2.y], [point3.x, point3.y], [point4.x, point4.y], [point5.x, point5.y], [point6.x, point6.y]]
+        for (let i= 0; i < 6; i++){
+            // translate point to origin
+            points[i][0] -= middlePoint.x
+            points[i][1] -= middlePoint.y
 
-            temp[i][0] /= canvas.width
-            temp[i][1] /= canvas.height
+            // scale points appropriately
+            points[i][0] *= canvas.width
+            points[i][1] *= canvas.height
 
-            temp[i][0] += (mid.x)
-            temp[i][1] +=(mid.y)
+            // rotate
+            points[i] = [cosTheta * points[i][0] - sinTheta * points[i][1], sinTheta * points[i][0] + cosTheta * points[i][1]]
+            
+            // scale points back
+            points[i][0] /= canvas.width
+            points[i][1] /= canvas.height
+
+            // translate back
+            points[i][0] += middlePoint.x
+            points[i][1] += middlePoint.y
+            this.points[i].x = points[i][0]
+            this.points[i].y = points[i][1]
+            console.log(`points[${i}] : ${points[i]}`)
         }
-        for(let i =0 ; i< 6; i++){
-            this.points[i] = temp[i]
-        }
-        this.initialPoint.x = temp[0].x
-        this.initialPoint.y = temp[0].y
-        this.secondPoint.x = temp[2].x
-        this.secondPoint.y = temp[2].y
-        this.point1 = temp[0]
-        this.point2 = temp[1]
-        this.point3 = temp[2]
-        this.point4 = temp[3]
-        this.point5 = temp[4]
-        this.point6 = temp[5]
+        this.initialPoint.x = points[0][0]
+        this.initialPoint.y = points[0][1]
 
-        this.vertices = [this.point1.x, this.point1.y, ...this.point1.getColor(), 
-            this.point2.x, this.point2.y, ...this.point2.getColor(),
-            this.point3.x, this.point3.y, ...this.point3.getColor(),
-            this.point4.x, this.point4.y, ...this.point4.getColor(),
-            this.point5.x, this.point5.y, ...this.point5.getColor(),
-            this.point6.x, this.point6.y, ...this.point6.getColor()]
-        
-    
+        this.secondPoint.x = points[2][0]
+        this.secondPoint.y = points[2][1]
+
+        for(let i = 0; i < 6; i++){
+            this.points[i].x = points[i][0]
+            this.points[i].y = points[i][1]
+        }
+        this.point1 = this.points[0]
+        this.point2 = this.points[1]
+        this.point3 = this.points[2]
+        this.point4 = this.points[3]
+        this.point5 = this.points[4]
+        this.point6 = this.points[5]
+
+        this.vertices = [...points[0],...getColor(),...points[1], ... getColor(),... points[2], ... getColor(),
+                        ...points[3], ... getColor(),... points[4],...getColor(), ...points[5], ...getColor()]
+        console.log(`this: ${this.vertices}`)
     }
 
     isCoordInside(coord: [number, number]): boolean {
