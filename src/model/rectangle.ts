@@ -147,7 +147,7 @@ class Rectangle implements Drawable, Transformable, Selectable{
         tempPoints[0] = this.points[0]
         tempPoints[1] = this.points[1]
         tempPoints[2] = this.points[2]
-        tempPoints[3] = this.points[3]
+        tempPoints[3] = this.points[5]
 
         let signs : number[] = []
         for(let i = 0; i < 4; i++){
