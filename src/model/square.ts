@@ -5,22 +5,51 @@ import Selectable from "./selectable";
 import VertexPointer from "./vertexPointer";
 
 class Square implements Drawable, Transformable, Selectable {
-    setSecondPoint(newPoint2: Point) {
-        throw new Error("Method not implemented.");
-    }
-    setInitialPoint(newPoint1: Point) {
-        throw new Error("Method not implemented.");
-    }
+    point1: Point
+    point2: Point
+    point3: Point
+    point4: Point
+    point5: Point
+    point6: Point
     initialPoint: Point;
-    sideLength: number;
+    secondPoint: Point;
+    sideLength: number = 0;
     vertices: number[] = [];
     points: Point[];
     colors: number[];
 
-    constructor(_initialPoint: Point, _sideLength: number) {
-        this.initialPoint = _initialPoint;
-        this.sideLength = _sideLength;
-        this.setAllPointsByInput();
+    setSideLength(_length){
+        this.sideLength = _length
+    }
+    setInitialPoint(newPoint1: Point) {
+        this.initialPoint = new Point(0, 0, getColor())
+        this.initialPoint = newPoint1
+    }
+    setSecondPoint(kuadran: number) {
+        this.secondPoint = new Point(0, 0, getColor())
+        const canvas = document.getElementById("canvas") as HTMLCanvasElement
+
+        switch(kuadran){
+            case 1:
+                this.secondPoint.x = this.initialPoint.x + this.sideLength * canvas.height / canvas.width
+                this.secondPoint.y = this.initialPoint.y + this.sideLength
+                break
+            case 2:
+                this.secondPoint.x = this.initialPoint.x - this.sideLength * canvas.height / canvas.width
+                this.secondPoint.y = this.initialPoint.y + this.sideLength
+                break
+            case 3:
+                this.secondPoint.x = this.initialPoint.x - this.sideLength * canvas.height / canvas.width
+                this.secondPoint.y = this.initialPoint.y - this.sideLength
+
+                break
+            case 4:
+                this.secondPoint.x = this.initialPoint.x + this.sideLength * canvas.height / canvas.width
+                this.secondPoint.y = this.initialPoint.y - this.sideLength
+
+                break
+        }
+        
     }
 
     setColors(colors: [number, number, number, number]) {
@@ -29,54 +58,159 @@ class Square implements Drawable, Transformable, Selectable {
 
     getMiddlePoint(): Point {
         const res = new Point(0, 0, getColor());
-        res.x = this.initialPoint.x + this.sideLength / 2;
-        res.y = this.initialPoint.y + this.sideLength / 2;
+        res.x = (this.initialPoint.x + this.secondPoint.x) /2
+        res.y = (this.initialPoint.y + this.secondPoint.y) /2
         return res;
     }
 
     setAllPointsByInput() {
-        const x = this.initialPoint.x;
-        const y = this.initialPoint.y;
-        this.vertices = [
-            x, y, ...getColor(),
-            x + this.sideLength, y, ...getColor(),
-            x + this.sideLength, y + this.sideLength, ...getColor(),
-            x, y, ...getColor(),
-            x + this.sideLength, y + this.sideLength, ...getColor(),
-            x, y + this.sideLength, ...getColor()
-        ];
-        this.points = [
-            new Point(x, y, getColor()),
-            new Point(x + this.sideLength, y, getColor()),
-            new Point(x + this.sideLength, y + this.sideLength, getColor()),
-            new Point(x, y, getColor()),
-            new Point(x + this.sideLength, y + this.sideLength, getColor()),
-            new Point(x, y + this.sideLength, getColor())
-        ];
+        this.point1 = new Point(this.initialPoint.x, this.initialPoint.y, getColor())
+        this.point2 = new Point(this.secondPoint.x, this.initialPoint.y, getColor())
+        this.point3 = new Point(this.secondPoint.x, this.secondPoint.y, getColor())
+        this.point4 = new Point(this.initialPoint.x, this.initialPoint.y, getColor())
+        this.point5 = new Point(this.secondPoint.x, this.secondPoint.y, getColor())
+        this.point6 = new Point(this.initialPoint.x, this.secondPoint.y, getColor())
+        this.points= [this.point1, this.point2, this.point3, this.point4, this.point5, this.point6]
+        this.vertices = [this.point1.x, this.point1.y, ...this.point1.getColor(), 
+            this.point2.x, this.point2.y, ...this.point2.getColor(),
+            this.point3.x, this.point3.y, ...this.point3.getColor(),
+            this.point4.x, this.point4.y, ...this.point4.getColor(),
+            this.point5.x, this.point5.y, ...this.point5.getColor(),
+            this.point6.x, this.point6.y, ...this.point6.getColor()]
     }
 
     translate(_deltaX: number, _deltaY: number) {
-        this.initialPoint.moveCoordinateX(_deltaX);
-        this.initialPoint.moveCoordinateY(_deltaY);
-        this.setAllPointsByInput();
+        for(let i = 0; i < 6; i++){
+            this.points[i].moveCoordinateX(_deltaX)
+            this.points[i].moveCoordinateY(_deltaY)
+        }
+        this.point1 = this.points[0]
+        this.point2 = this.points[1]
+        this.point3 = this.points[2]
+        this.point4 = this.points[3]
+        this.point5 = this.points[4]
+        this.point6 = this.points[5]
+        this.points= [this.point1, this.point2, this.point3, this.point4, this.point5, this.point6]
+        this.vertices = [this.point1.x, this.point1.y, ...this.point1.getColor(), 
+            this.point2.x, this.point2.y, ...this.point2.getColor(),
+            this.point3.x, this.point3.y, ...this.point3.getColor(),
+            this.point4.x, this.point4.y, ...this.point4.getColor(),
+            this.point5.x, this.point5.y, ...this.point5.getColor(),
+            this.point6.x, this.point6.y, ...this.point6.getColor()]
     }
 
     dilate(_scale: number) {
-        this.sideLength *= _scale;
-        this.setAllPointsByInput();
+        var mid = this.getMiddlePoint()
+        console.log(mid)
+        var tempPoints : Point[]
+        tempPoints = this.points
+        for(let i = 0; i < 6; i++){
+            tempPoints[i].moveCoordinateX(-mid.x)
+            tempPoints[i].moveCoordinateY(-mid.y)
+            tempPoints[i].x *= _scale
+            tempPoints[i].y *= _scale
+            tempPoints[i].moveCoordinateX(mid.x)
+            tempPoints[i].moveCoordinateY(mid.y)
+        }
+        this.point1 = tempPoints[0]
+        this.point2 = tempPoints[1]
+        this.point3 = tempPoints[2]
+        this.point4 = tempPoints[3]
+        this.point5 = tempPoints[4]
+        this.point6 = tempPoints[5]
+
+        this.initialPoint = this.points[0]
+        this.secondPoint = this.points[2]
+
+        this.points = [this.point1, this.point2, this.point3, this.point4, this.point5, this.point6]
+        this.vertices = [this.point1.x, this.point1.y, ...this.point1.getColor(), 
+            this.point2.x, this.point2.y, ...this.point2.getColor(),
+            this.point3.x, this.point3.y, ...this.point3.getColor(),
+            this.point4.x, this.point4.y, ...this.point4.getColor(),
+            this.point5.x, this.point5.y, ...this.point5.getColor(),
+            this.point6.x, this.point6.y, ...this.point6.getColor()]
     }
 
     rotate(_theta: number) {
-        // Square maintains the same orientation after rotation
+        _theta = _theta * (Math.PI/180) // degrees to radian
+        console.log(`radian : ${_theta}`)
+        const cosTheta = Math.cos(_theta)
+        const sinTheta = Math.sin(_theta);
+
+        var mid = this.getMiddlePoint()
+        const canvas = document.getElementById("canvas") as HTMLCanvasElement
+        
+        var point1 = this.points[0]
+        var point2 = this.points[1]
+        var point3 = this.points[2]
+        var point4 = this.points[3]
+        var point5 = this.points[4]
+        var point6 = this.points[5]
+        var temp = [[point1.x, point1.y], [point2.x, point2.y], [point3.x, point3.y], [point4.x, point4.y], [point5.x, point5.y], [point6.x, point6.y]]
+        // for(let i = 0; i < 6; i++){
+        //     temp[i] = this.points[i]
+        // }
+        for(let i = 0; i< 6; i++){
+            temp[i][0] -= mid.x
+            temp[i][1] -= mid.x
+            temp[i][0] *= canvas.width
+            temp[i][1] *= canvas.height
+
+            temp[i][0] = cosTheta * temp[i][0] - sinTheta * temp[i][1]
+            temp[i][1] = sinTheta * temp[i][0] + cosTheta * temp[i][1]
+
+            temp[i][0] /= canvas.width
+            temp[i][1] /= canvas.height
+
+            temp[i][0] += (mid.x)
+            temp[i][1] +=(mid.y)
+        }
+        for(let i =0 ; i< 6; i++){
+            this.points[i] = temp[i]
+        }
+        this.initialPoint.x = temp[0].x
+        this.initialPoint.y = temp[0].y
+        this.secondPoint.x = temp[2].x
+        this.secondPoint.y = temp[2].y
+        this.point1 = temp[0]
+        this.point2 = temp[1]
+        this.point3 = temp[2]
+        this.point4 = temp[3]
+        this.point5 = temp[4]
+        this.point6 = temp[5]
+
+        this.vertices = [this.point1.x, this.point1.y, ...this.point1.getColor(), 
+            this.point2.x, this.point2.y, ...this.point2.getColor(),
+            this.point3.x, this.point3.y, ...this.point3.getColor(),
+            this.point4.x, this.point4.y, ...this.point4.getColor(),
+            this.point5.x, this.point5.y, ...this.point5.getColor(),
+            this.point6.x, this.point6.y, ...this.point6.getColor()]
+        
+    
     }
 
     isCoordInside(coord: [number, number]): boolean {
-        return (
-            coord[0] >= this.initialPoint.x &&
-            coord[0] <= this.initialPoint.x + this.sideLength &&
-            coord[1] >= this.initialPoint.y &&
-            coord[1] <= this.initialPoint.y + this.sideLength
-        );
+        var mid = this.getMiddlePoint()
+        const angle = Math.atan2(this.secondPoint.y - this.initialPoint.y, this.secondPoint.x - this.initialPoint.x) - Math.PI / 4;
+        const cosTheta = Math.cos(-angle)
+        const sinTheta = Math.sin(-angle);
+
+        coord[0] -= mid.x
+        coord[1] -= mid.y
+
+        coord[0] = cosTheta * coord[0] - sinTheta * coord[1]
+        coord[1] = sinTheta * coord[0] + cosTheta * coord[1]
+
+        coord[0] += mid.x
+        coord[1] += mid.y
+
+        const minX = mid.x - this.sideLength / 2;
+        const maxX = mid.x + this.sideLength / 2;
+        const minY = mid.y - this.sideLength / 2;
+        const maxY = mid.y + this.sideLength / 2;
+
+        return (minX <= coord[0]) && (coord[0] <= maxX) && (minY <= coord[1]) && (coord[1] <= maxY)
+
     }
 
     draw(gl: WebGLRenderingContext): void {

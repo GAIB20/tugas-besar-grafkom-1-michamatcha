@@ -7,6 +7,9 @@ import Rectangle from "./model/rectangle";
 import { getColor } from "./utils/colorUtil";
 import Polygon from "./model/polygon";
 import VertexPointer from "./model/vertexPointer";
+import Square from "./model/square";
+import { SquareHandler } from "./handler/squareHandler";
+import { square } from "mathjs";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 if(canvas === null) {
@@ -62,6 +65,20 @@ selectButton.addEventListener('click', function(){
       count--
     }
 
+    //check square
+    count = squares.length-1;
+    for(let i = squares.length-1; i >= 0; i--){
+      temp = squares[i].isCoordInside([new_point.x, new_point.y])
+      if(temp){
+        console.log(`Inside square ${count}`)
+        shapeActive = 2
+        order = count
+        break
+      }
+      count--
+    }
+
+
     // check rectangle
     count = rectangles.length-1;
     for(let i = rectangles.length-1; i >= 0; i--){
@@ -74,6 +91,7 @@ selectButton.addEventListener('click', function(){
       }
       count--
     }
+
 
     // check line
     count = lines.length - 1
@@ -105,7 +123,9 @@ selectButton.addEventListener('click', function(){
       lines[order].showAllVertex(vertexPointers);
     } else if(shapeActive === 1 && rectangles[order]) {
       rectangles[order].showAllVertex(vertexPointers);
-    } else if(shapeActive === 3 && polygons[order]) {
+    } else if(shapeActive === 2 && squares[order]){
+      squares[order].showAllVertex(vertexPointers)
+    }else if(shapeActive === 3 && polygons[order]) {
       polygons[order].showAllVertex(vertexPointers);
     } else if (shapeActive === 4 && vertexPointers[order]) {
       vertexPointers[order].showAllVertex(vertexPointers)
@@ -179,7 +199,13 @@ function translation(){
     } else if(shapeActive === 1 && rectangles[order]) {
         rectangles[order].translate(diffX, diffY);
         rectangles[order].showAllVertex(vertexPointers);
-    } else if(shapeActive === 3 && polygons[order]) {
+      
+    } else if(shapeActive === 2 && squares[order]){
+        squares[order].translate(diffX, diffY);
+        squares[order].showAllVertex(vertexPointers);
+    }
+    
+    else if(shapeActive === 3 && polygons[order]) {
         polygons[order].translate(diffX, diffY)
         polygons[order].showAllVertex(vertexPointers);
     }
@@ -196,7 +222,11 @@ function dilate(){
     }else if(shapeActive === 1 && rectangles[order]){
       rectangles[order].dilate(diff)
       rectangles[order].showAllVertex(vertexPointers);
-    }else if(shapeActive === 3 && polygons[order]) {
+    }else if(shapeActive ===2 && squares[order]){
+      squares[order].dilate(diff)
+      squares[order].showAllVertex(vertexPointers)
+    }
+    else if(shapeActive === 3 && polygons[order]) {
       polygons[order].dilate(diff)
       polygons[order].showAllVertex(vertexPointers);
     }
@@ -214,6 +244,9 @@ function rotate(){
     }else if(shapeActive===1 && rectangles[order]){
       rectangles[order].rotate(diff)
       rectangles[order].showAllVertex(vertexPointers);
+    }else if(shapeActive === 2 && squares[order]){
+      squares[order].rotate(diff)
+      squares[order].showAllVertex(vertexPointers);
     }else if(shapeActive === 3 && polygons[order]) {
       polygons[order].rotate(diff)
       polygons[order].showAllVertex(vertexPointers);
@@ -229,6 +262,7 @@ function handleShapeButton(buttonId: string){
       break;
     case "shapeSquare":
       console.log("Square selected");
+      changeCurrentHandler(new SquareHandler(gl, squares))
       break;
     case "shapeRectangle":
       console.log("Rectangle selected")
@@ -246,7 +280,9 @@ function handleShapeButton(buttonId: string){
 const lines: Array<Line> = []
 const rectangles : Array <Rectangle> = []
 const polygons: Array<Polygon> = []
+const squares: Array <Square> = []
 const vertexPointers: Array<VertexPointer> = []
+
 
 
 // CREATE VERTEX SHADER
@@ -305,6 +341,10 @@ function drawScene() {
     element.draw(gl);
   });
   rectangles.forEach(element => {
+    element.draw(gl)
+  })
+  squares.forEach(element => {
+    // console.log(element)
     element.draw(gl)
   })
   polygons.forEach (element => {
