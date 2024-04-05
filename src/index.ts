@@ -314,6 +314,7 @@ colorPicker.addEventListener('change', (ev) => {
         shapeSelected = rectangles[order]
         break
       case 2:
+        shapeSelected = squares[order]
         break
       case 3:
         shapeSelected = polygons[order]
@@ -343,6 +344,7 @@ movePoint.addEventListener('click', (ev) => {
       shapeSelected = rectangles[order]
       break
     case 2:
+      shapeSelected = squares[order]
       break
     case 3:
       shapeSelected = polygons[order]

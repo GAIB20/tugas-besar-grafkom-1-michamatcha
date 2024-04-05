@@ -195,27 +195,57 @@ class Square implements Drawable, Transformable, Selectable {
     }
 
     isCoordInside(coord: [number, number]): boolean {
-        var mid = this.getMiddlePoint()
-        const angle = Math.atan2(this.secondPoint.y - this.initialPoint.y, this.secondPoint.x - this.initialPoint.x) - Math.PI / 4;
-        const cosTheta = Math.cos(-angle)
-        const sinTheta = Math.sin(-angle);
+        var tempPoints : Point[] = []
+        tempPoints[0] = this.points[0]
+        tempPoints[1] = this.points[1]
+        tempPoints[2] = this.points[2]
+        tempPoints[3] = this.points[5]
 
-        coord[0] -= mid.x
-        coord[1] -= mid.y
+        let signs : number[] = []
+        for(let i = 0; i < 4; i++){
+            const p1 =tempPoints[i]
+            const p2 = tempPoints[(i+1) % 4]
+            const edgeVector = { x: p2.x - p1.x, y: p2.y - p1.y };
+            const pointVector = { x: coord[0] - p1.x, y: coord[1] - p1.y };
+            
+        
+            const crossProduct = edgeVector.x * pointVector.y - edgeVector.y * pointVector.x;
+            if (crossProduct < 0) {
+              signs.push(-1);
+            } else if (crossProduct > 0) {
+              signs.push(1);
+            } else {
+              signs.push(0); 
+            }
 
-        coord[0] = cosTheta * coord[0] - sinTheta * coord[1]
-        coord[1] = sinTheta * coord[0] + cosTheta * coord[1]
+        }
+        const allPositiveOrZero = signs.every(sign => sign >= 0);
+        const allNegativeOrZero = signs.every(sign => sign <= 0);
+      
+        return allPositiveOrZero || allNegativeOrZero;
+    }
 
-        coord[0] += mid.x
-        coord[1] += mid.y
-
-        const minX = mid.x - this.sideLength / 2;
-        const maxX = mid.x + this.sideLength / 2;
-        const minY = mid.y - this.sideLength / 2;
-        const maxY = mid.y + this.sideLength / 2;
-
-        return (minX <= coord[0]) && (coord[0] <= maxX) && (minY <= coord[1]) && (coord[1] <= maxY)
-
+    changeAllColor(color: [number, number, number, number]): void {
+        this.points.forEach((point) => {
+            point.setColor(color)
+        })
+        for (let j = 0; j < 6; ++j) {
+            for (let i = 0; i < 4; i++) {
+                this.vertices[j * 6 + 2 + i] = color[i]
+            }
+        }
+    }
+    changeColor(id: number, color: [number, number, number, number]): void {
+        this.points[id].setColor(color)
+        for (let i = 0; i < 4; i++) {
+            this.vertices[id * 6 + 2 + i] = color[i]
+        }
+    }
+    commitMove(): void {
+        
+    }
+    movePoint(id: number, _posX: number, _posY: number): void {
+        
     }
 
     draw(gl: WebGLRenderingContext): void {
