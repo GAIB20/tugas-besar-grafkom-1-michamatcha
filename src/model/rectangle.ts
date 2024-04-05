@@ -190,6 +190,32 @@ class Rectangle implements Drawable, Transformable, Selectable{
         }
     }
     movePoint(id: number, _posX: number, _posY: number): void {
+        const temprot = this.rotation
+        const _theta = -temprot * (Math.PI/180)
+
+        // Rotate new position, centered around middlepoint
+        const cosTheta = Math.cos(_theta)
+        const sinTheta = Math.sin(_theta);
+        const canvas = document.getElementById("canvas") as HTMLCanvasElement
+        const mid = this.getMiddlePoint()
+        _posX -= mid.x
+        _posY -= mid.y
+
+        _posX *= canvas.width
+        _posY *= canvas.height
+
+        let _pos = [cosTheta * _posX - sinTheta * _posY, sinTheta * _posX + cosTheta * _posY]
+        _posX = _pos[0]
+        _posY = _pos[1]
+
+        _posX /= canvas.width
+        _posY /= canvas.height
+
+        _posX += mid.x
+        _posY += mid.y
+
+        this.rotate(-this.rotation)
+
         if (id === 0) {
             this.vertices[0 * 6 + 0] = this.points[0].x = _posX
             this.vertices[0 * 6 + 1] = this.points[0].y = _posY
@@ -226,6 +252,7 @@ class Rectangle implements Drawable, Transformable, Selectable{
             this.vertices[3 * 6 + 0] = this.points[3].x = _posX
             this.vertices[4 * 6 + 1] = this.points[4].y = _posY
         }
+        this.rotate(temprot)
     }
     commitMove(): void {
         
