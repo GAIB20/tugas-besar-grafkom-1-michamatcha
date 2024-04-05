@@ -9,6 +9,8 @@ import Polygon from "./model/polygon";
 import VertexPointer from "./model/vertexPointer";
 import Selectable from "./model/selectable";
 import { MovePointHandler } from "./handler/movePointHandler";
+import { EmptyHandler } from "./handler/emptyHandler";
+import { AddPointHandler } from "./handler/addPointHandler";
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement
 if(canvas === null) {
@@ -27,6 +29,9 @@ const selectNone = () => {
   shapeActive = -1;
   order = -1;
   pointOrder = -1;
+}
+const handleNone = () => {
+  changeCurrentHandler(new EmptyHandler())
 }
 
 const shapeButtons = document.getElementsByClassName("shape");
@@ -315,6 +320,46 @@ movePoint.addEventListener('click', (ev) => {
   }
   else {
     alert("Select any point before pressing move point")
+  }
+})
+
+// polygon tools
+const addPoint = document.getElementById("addPoint")
+addPoint.addEventListener('click', (ev) => {
+  let shapeSelected: Polygon = null
+  switch (shapeActive) {
+    case 3:
+      shapeSelected = polygons[order]
+      break
+    default:
+      break
+  }
+
+  if (shapeSelected && pointOrder == -1) {
+    // do ur job here
+    changeCurrentHandler(new AddPointHandler(gl, shapeSelected, vertexPointers, handleNone))
+  }
+  else {
+    alert("Select a polygon to add point")
+  }
+})
+
+const removePoint = document.getElementById("removePoint")
+removePoint.addEventListener('click', (ev) => {
+  let shapeSelected: Polygon = null
+  switch (shapeActive) {
+    case 3:
+      shapeSelected = polygons[order]
+      break
+    default:
+      break
+  }
+
+  if (shapeSelected && pointOrder != -1) {
+      shapeSelected.removePointFromId(pointOrder)
+  }
+  else {
+      alert("Select any point of a polygon to remove it")
   }
 })
 

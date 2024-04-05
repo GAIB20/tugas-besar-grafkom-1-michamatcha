@@ -17,6 +17,11 @@ class Polygon implements Drawable, Transformable, Selectable {
         this.grahamScan()
         this.refreshBuffer()
     }
+    public removePointFromId(id: number) {
+        this.points.splice(id, 1)
+        this.grahamScan()
+        this.refreshBuffer()
+    }
 
     public refreshBuffer() {
         this.pointsBuffer = []
